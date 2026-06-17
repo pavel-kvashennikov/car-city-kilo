@@ -1,0 +1,65 @@
+<script setup>
+import { useForm, Link } from '@inertiajs/vue3';
+import AppLayout from '@/Components/Layout/AppLayout.vue';
+
+const form = useForm({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    password_confirmation: '',
+});
+
+function submit() {
+    form.post('/register');
+}
+</script>
+
+<template>
+    <AppLayout>
+        <div class="min-h-[60vh] flex items-center justify-center py-12 px-4">
+            <div class="w-full max-w-md">
+                <h1 class="text-2xl font-bold text-center mb-8">Регистрация</h1>
+
+                <form @submit.prevent="submit" class="bg-white rounded-xl shadow-sm border p-8 space-y-5">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Имя</label>
+                        <input v-model="form.name" type="text" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <p v-if="form.errors.name" class="mt-1 text-sm text-red-600">{{ form.errors.name }}</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input v-model="form.email" type="email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <p v-if="form.errors.email" class="mt-1 text-sm text-red-600">{{ form.errors.email }}</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+                        <input v-model="form.phone" type="tel" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="+7 (XXX) XXX-XX-XX" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
+                        <input v-model="form.password" type="password" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                        <p v-if="form.errors.password" class="mt-1 text-sm text-red-600">{{ form.errors.password }}</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Подтвердите пароль</label>
+                        <input v-model="form.password_confirmation" type="password" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                    </div>
+
+                    <button type="submit" :disabled="form.processing" class="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors">
+                        Зарегистрироваться
+                    </button>
+
+                    <p class="text-center text-sm text-gray-600">
+                        Уже есть аккаунт?
+                        <Link href="/login" class="text-blue-600 hover:underline">Войти</Link>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </AppLayout>
+</template>

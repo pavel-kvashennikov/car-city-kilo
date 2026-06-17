@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+@source '../js/**/*.vue';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --color-primary: #2563eb;
+    --color-primary-dark: #1d4ed8;
+}
