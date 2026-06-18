@@ -27,8 +27,15 @@ export default defineConfig({
         },
     },
     server: {
+        host: '0.0.0.0',
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            host: process.env.VITE_HMR_HOST || 'localhost',
+        },
         watch: {
             ignored: ['**/storage/framework/views/**'],
+            usePolling: process.env.VITE_USE_POLLING === 'true',
         },
     },
 });

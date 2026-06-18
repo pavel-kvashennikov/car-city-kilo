@@ -14,7 +14,8 @@ class DashboardController extends Controller
         $user = $request->user();
 
         return Inertia::render('Buyer/Dashboard', [
-            'recentOrders' => $user->orders()->latest()->take(5)->get(),
+            'ordersCount' => $user->orders()->count(),
+            'appointmentsCount' => \Src\Service\Domain\Models\Appointment::where('user_id', $user->id)->count(),
             'favoritesCount' => $user->favorites()->count(),
         ]);
     }

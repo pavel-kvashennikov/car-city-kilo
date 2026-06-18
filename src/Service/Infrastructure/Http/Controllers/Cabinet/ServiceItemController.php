@@ -51,7 +51,16 @@ class ServiceItemController extends Controller
 
     public function update(Request $request, ServiceItem $item)
     {
-        $item->update($request->validated());
+        $validated = $request->validate([
+            'name' => ['sometimes', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'price_fixed' => ['nullable', 'integer', 'min:0'],
+            'price_from' => ['nullable', 'integer', 'min:0'],
+            'price_to' => ['nullable', 'integer', 'min:0'],
+            'duration_minutes' => ['nullable', 'integer', 'min:0'],
+        ]);
+
+        $item->update($validated);
 
         return back()->with('success', 'Услуга обновлена.');
     }

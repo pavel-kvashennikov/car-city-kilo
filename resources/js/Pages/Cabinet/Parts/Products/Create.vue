@@ -16,8 +16,9 @@ const form = useForm({
     category_id: '',
     price_retail: '',
     price_wholesale: '',
-    quantity: '',
+    stock_quantity: '',
     condition: 'new',
+    part_type: 'aftermarket',
     description: '',
 })
 
@@ -48,7 +49,7 @@ const submit = () => {
             <div class="grid grid-cols-3 gap-4">
                 <Input v-model="form.price_retail" label="Цена (розн.)" type="number" />
                 <Input v-model="form.price_wholesale" label="Цена (опт.)" type="number" />
-                <Input v-model="form.quantity" label="Кол-во" type="number" />
+                <Input v-model="form.stock_quantity" label="Кол-во" type="number" />
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Описание</label>

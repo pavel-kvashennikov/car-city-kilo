@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,20 +13,28 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolePermissionSeeder::class,
             CatalogSeeder::class,
+            PlanSeeder::class,
         ]);
 
-        // Create SuperAdmin
-        $admin = User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@automarket.ru',
-        ]);
-        $admin->assignRole('super_admin');
+        // Глобальные роли (super_admin, buyer) привязаны к team_id = 0
+        setPermissionsTeamId(0);
 
-        // Create test buyer
-        $buyer = User::factory()->create([
-            'name' => 'Покупатель',
-            'email' => 'buyer@automarket.ru',
-        ]);
-        $buyer->assignRole('buyer');
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@automarket.ru'],
+            ['name' => 'Admin', 'password' => bcrypt('password')]
+        );
+        if (! $admin->hasRole('super_admin')) {
+            $admin->assignRole('super_admin');
+        }
+
+        $buyer = User::firstOrCreate(
+            ['email' => 'buyer@automarket.ru'],
+            ['name' => 'Покупатель', 'password' => bcrypt('password')]
+        );
+        if (! $buyer->hasRole('buyer')) {
+            $buyer->assignRole('buyer');
+        }
+
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
     }
 }

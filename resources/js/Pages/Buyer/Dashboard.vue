@@ -22,10 +22,10 @@ defineProps({
                     <p class="text-3xl font-bold text-green-600">{{ appointmentsCount }}</p>
                     <p class="text-gray-600 mt-1">Записи на сервис</p>
                 </Link>
-                <div class="bg-white rounded-xl shadow p-6">
+                <Link href="/buyer/favorites" class="bg-white rounded-xl shadow p-6 hover:shadow-lg transition block">
                     <p class="text-3xl font-bold text-yellow-600">{{ favoritesCount }}</p>
                     <p class="text-gray-600 mt-1">Избранное</p>
-                </div>
+                </Link>
             </div>
         </div>
     </AppLayout>

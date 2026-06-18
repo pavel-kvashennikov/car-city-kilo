@@ -1,14 +1,20 @@
 <?php
 
+use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
+use App\Http\Controllers\Admin\BillingController as AdminBillingController;
+use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\Admin\CompanyManageController;
 use App\Http\Controllers\Admin\MarketMapController;
 use App\Http\Controllers\Admin\ModerationController;
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Buyer\AppointmentController as BuyerAppointmentController;
 use App\Http\Controllers\Buyer\DashboardController;
 use App\Http\Controllers\Buyer\FavoriteController;
 use App\Http\Controllers\Buyer\OrderController;
+use App\Http\Controllers\Cabinet\AnalyticsController as CabinetAnalyticsController;
+use App\Http\Controllers\Cabinet\BillingController as CabinetBillingController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Src\Company\Domain\Models\Company;
@@ -98,6 +104,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('buyer')->name('buyer.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/appointments', [BuyerAppointmentController::class, 'index'])->name('appointments.index');
         Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites');
     });
 
@@ -120,6 +127,8 @@ Route::middleware('auth')->group(function () {
     */
     Route::prefix('cabinet')->name('cabinet.')->middleware(['auth'])->group(function () {
         Route::get('/', [App\Http\Controllers\Cabinet\DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/billing', [CabinetBillingController::class, 'index'])->name('billing');
+        Route::get('/analytics', [CabinetAnalyticsController::class, 'index'])->name('analytics');
 
         // Company Management
         Route::get('/company', [CompanySettingsController::class, 'edit'])->name('company.edit');
@@ -166,7 +175,10 @@ Route::middleware('auth')->group(function () {
         Route::put('/companies/{company}/reject', [CompanyManageController::class, 'reject'])->name('companies.reject');
         Route::put('/companies/{company}/suspend', [CompanyManageController::class, 'suspend'])->name('companies.suspend');
         Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation.index');
+        Route::get('/billing', [AdminBillingController::class, 'index'])->name('billing.index');
         Route::get('/billing/plans', [PlanController::class, 'index'])->name('plans.index');
+        Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
+        Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/market-map', [MarketMapController::class, 'index'])->name('market-map');
     });
 });

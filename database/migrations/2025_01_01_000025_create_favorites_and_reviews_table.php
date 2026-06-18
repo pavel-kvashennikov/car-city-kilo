@@ -26,8 +26,6 @@ return new class extends Migration
             $table->text('body')->nullable();
             $table->string('status', 20)->default('pending');
             $table->timestamps();
-
-            $table->index(['reviewable_type', 'reviewable_id']);
         });
     }
 

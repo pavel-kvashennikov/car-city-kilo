@@ -5,7 +5,7 @@ import Badge from '@/Components/UI/Badge.vue'
 import { Link } from '@inertiajs/vue3'
 
 defineProps({
-    masters: { type: Array, default: () => [] },
+    masters: { type: Object, default: () => ({ data: [], links: [] }) },
 })
 
 const columns = [
@@ -24,7 +24,7 @@ const columns = [
                 Добавить мастера
             </Link>
         </div>
-        <DataTable :columns="columns" :rows="masters">
+        <DataTable :columns="columns" :rows="masters.data ?? masters">
             <template #cell-is_active="{ value }">
                 <Badge :variant="value ? 'success' : 'default'">{{ value ? 'Активен' : 'Неактивен' }}</Badge>
             </template>

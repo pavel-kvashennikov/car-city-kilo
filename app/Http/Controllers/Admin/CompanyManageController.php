@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Src\Company\Application\Services\ProfileProvisioner;
 use Src\Company\Domain\Models\Company;
 use Src\Shared\Support\Enums\CompanyStatus;
 
@@ -32,6 +33,8 @@ class CompanyManageController extends Controller
             'status' => CompanyStatus::ACTIVE,
             'verified_at' => now(),
         ]);
+
+        ProfileProvisioner::provisionFromBusinessProfiles($company->load('businessProfiles'));
 
         return back()->with('success', 'Компания одобрена.');
     }

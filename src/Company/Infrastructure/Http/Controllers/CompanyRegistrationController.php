@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Src\Company\Application\Services\ProfileProvisioner;
 use Src\Company\Domain\Models\Company;
 use Src\Shared\Support\Enums\CompanyStatus;
 
@@ -37,9 +38,7 @@ class CompanyRegistrationController extends Controller
 
         $company->users()->attach($request->user()->id, ['position' => 'owner']);
 
-        foreach ($validated['profiles'] as $profileType) {
-            $company->businessProfiles()->create(['type' => $profileType]);
-        }
+        ProfileProvisioner::provisionAll($company, $validated['profiles']);
 
         return redirect()->route('cabinet.dashboard')
             ->with('success', 'Заявка на регистрацию отправлена. Ожидайте модерации.');

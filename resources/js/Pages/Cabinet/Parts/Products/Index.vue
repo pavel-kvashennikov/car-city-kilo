@@ -14,7 +14,7 @@ const columns = [
     { key: 'article_number', label: 'Артикул' },
     { key: 'oem_number', label: 'OEM' },
     { key: 'price_retail', label: 'Цена' },
-    { key: 'quantity', label: 'Остаток' },
+    { key: 'stock_quantity', label: 'Остаток' },
     { key: 'actions', label: '' },
 ]
 
@@ -38,7 +38,7 @@ const formatPrice = (v) => v ? new Intl.NumberFormat('ru-RU').format(v / 100) + 
             <template #cell-price_retail="{ value }">
                 {{ formatPrice(value) }}
             </template>
-            <template #cell-quantity="{ value }">
+            <template #cell-stock_quantity="{ value }">
                 <Badge :variant="value > 0 ? 'success' : 'danger'">{{ value }}</Badge>
             </template>
             <template #cell-actions="{ row }">
