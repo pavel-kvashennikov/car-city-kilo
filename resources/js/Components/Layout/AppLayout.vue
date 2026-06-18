@@ -1,11 +1,12 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
-import { Menu, X, ShoppingCart, User, Search } from 'lucide-vue-next';
+import { Menu, X, ShoppingCart, User, Search, Car } from 'lucide-vue-next';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const mobileMenuOpen = ref(false);
+const currentUrl = computed(() => page.url);
 
 const navigation = [
     { name: 'Автомобили', href: '/catalog/cars' },
@@ -14,58 +15,65 @@ const navigation = [
     { name: 'Компании', href: '/companies' },
     { name: 'Карта рынка', href: '/market-map' },
 ];
+
+const isActive = (href) => currentUrl.value.startsWith(href);
 </script>
 
 <template>
     <div class="min-h-screen flex flex-col">
-        <!-- Header -->
-        <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <header class="header-glass sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
-                    <!-- Logo -->
-                    <div class="flex items-center">
-                        <Link href="/" class="text-xl font-bold text-blue-600">
-                            AutoMarket
+                    <div class="flex items-center gap-8">
+                        <Link href="/" class="flex items-center gap-2.5 group">
+                            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
+                                <Car class="w-5 h-5 text-white" />
+                            </div>
+                            <span class="text-xl font-bold text-gradient">AutoMarket</span>
                         </Link>
+
+                        <nav class="hidden lg:flex items-center gap-1">
+                            <Link
+                                v-for="item in navigation"
+                                :key="item.name"
+                                :href="item.href"
+                                class="nav-link"
+                                :class="{ 'nav-link-active': isActive(item.href) }"
+                            >
+                                {{ item.name }}
+                            </Link>
+                        </nav>
                     </div>
 
-                    <!-- Desktop Navigation -->
-                    <nav class="hidden md:flex space-x-8">
-                        <Link
-                            v-for="item in navigation"
-                            :key="item.name"
-                            :href="item.href"
-                            class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors"
-                        >
-                            {{ item.name }}
-                        </Link>
-                    </nav>
+                    <div class="flex items-center gap-2">
+                        <div class="hidden md:flex search-pill">
+                            <Search class="w-4 h-4 text-secondary shrink-0" />
+                            <input
+                                type="text"
+                                placeholder="Поиск..."
+                                class="bg-transparent border-none outline-none text-sm w-36 lg:w-44 placeholder:text-secondary/60"
+                            />
+                        </div>
 
-                    <!-- Right section -->
-                    <div class="flex items-center space-x-4">
-                        <button class="text-gray-500 hover:text-gray-700">
-                            <Search class="w-5 h-5" />
-                        </button>
-                        <Link href="/cart" class="text-gray-500 hover:text-gray-700 relative">
+                        <Link href="/cart" class="btn-ghost relative">
                             <ShoppingCart class="w-5 h-5" />
                         </Link>
 
                         <template v-if="user">
-                            <Link href="/cabinet" class="text-gray-500 hover:text-gray-700">
+                            <Link href="/buyer/dashboard" class="btn-ghost">
                                 <User class="w-5 h-5" />
                             </Link>
                         </template>
                         <template v-else>
-                            <Link href="/login" class="text-sm font-medium text-gray-700 hover:text-blue-600">
+                            <Link href="/login" class="hidden sm:inline-flex nav-link">
                                 Войти
                             </Link>
-                            <Link href="/register" class="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors">
+                            <Link href="/register" class="btn-primary text-sm !py-2 !px-4">
                                 Регистрация
                             </Link>
                         </template>
 
-                        <!-- Mobile menu button -->
-                        <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-gray-500">
+                        <button class="lg:hidden btn-ghost" @click="mobileMenuOpen = !mobileMenuOpen">
                             <Menu v-if="!mobileMenuOpen" class="w-6 h-6" />
                             <X v-else class="w-6 h-6" />
                         </button>
@@ -73,14 +81,14 @@ const navigation = [
                 </div>
             </div>
 
-            <!-- Mobile menu -->
-            <div v-if="mobileMenuOpen" class="md:hidden border-t border-gray-200">
-                <div class="px-2 pt-2 pb-3 space-y-1">
+            <div v-if="mobileMenuOpen" class="lg:hidden border-t border-outline/30 bg-white/95 backdrop-blur-xl">
+                <div class="px-4 py-3 space-y-1">
                     <Link
                         v-for="item in navigation"
                         :key="item.name"
                         :href="item.href"
-                        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md"
+                        class="block nav-link"
+                        :class="{ 'nav-link-active': isActive(item.href) }"
                         @click="mobileMenuOpen = false"
                     >
                         {{ item.name }}
@@ -89,46 +97,51 @@ const navigation = [
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="flex-1">
             <slot />
         </main>
 
-        <!-- Footer -->
-        <footer class="bg-gray-900 text-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div>
-                        <h3 class="text-lg font-bold mb-4">AutoMarket</h3>
-                        <p class="text-gray-400 text-sm">
-                            Единый портал городского авторынка. Автомобили, запчасти и сервис в одном месте.
+        <footer class="bg-carbon-deep text-white mt-auto relative overflow-hidden">
+            <div class="h-px bg-gradient-to-r from-transparent via-primary-bright/40 to-transparent" />
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+                    <div class="md:col-span-1">
+                        <div class="flex items-center gap-2.5 mb-4">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center">
+                                <Car class="w-4 h-4 text-white" />
+                            </div>
+                            <span class="text-lg font-bold">AutoMarket</span>
+                        </div>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            Единый портал городского авторынка. Автомобили, запчасти и сервис от проверенных резидентов.
                         </p>
                     </div>
                     <div>
-                        <h4 class="font-semibold mb-3">Каталог</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li><Link href="/catalog/cars" class="hover:text-white">Автомобили</Link></li>
-                            <li><Link href="/catalog/parts" class="hover:text-white">Запчасти</Link></li>
-                            <li><Link href="/catalog/services" class="hover:text-white">Автосервисы</Link></li>
+                        <h4 class="font-semibold text-sm uppercase tracking-wider text-gray-300 mb-4">Каталог</h4>
+                        <ul class="space-y-2.5 text-sm text-gray-400">
+                            <li><Link href="/catalog/cars" class="hover:text-white transition-colors">Автомобили</Link></li>
+                            <li><Link href="/catalog/parts" class="hover:text-white transition-colors">Запчасти</Link></li>
+                            <li><Link href="/catalog/services" class="hover:text-white transition-colors">Автосервисы</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 class="font-semibold mb-3">Для бизнеса</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li><Link href="/register/company" class="hover:text-white">Стать резидентом</Link></li>
-                            <li><Link href="/pricing" class="hover:text-white">Тарифы</Link></li>
+                        <h4 class="font-semibold text-sm uppercase tracking-wider text-gray-300 mb-4">Для бизнеса</h4>
+                        <ul class="space-y-2.5 text-sm text-gray-400">
+                            <li><Link href="/register/company" class="hover:text-white transition-colors">Стать резидентом</Link></li>
+                            <li><Link href="/cabinet/billing" class="hover:text-white transition-colors">Тарифы</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 class="font-semibold mb-3">Контакты</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li>Телефон: +7 (XXX) XXX-XX-XX</li>
-                            <li>Email: info@automarket.ru</li>
+                        <h4 class="font-semibold text-sm uppercase tracking-wider text-gray-300 mb-4">Контакты</h4>
+                        <ul class="space-y-2.5 text-sm text-gray-400">
+                            <li>+7 (XXX) XXX-XX-XX</li>
+                            <li>info@automarket.ru</li>
                         </ul>
                     </div>
                 </div>
-                <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-                    &copy; {{ new Date().getFullYear() }} AutoMarket. Все права защищены.
+                <div class="border-t border-gray-800 mt-10 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+                    <span>&copy; {{ new Date().getFullYear() }} AutoMarket. Все права защищены.</span>
+                    <span class="text-gray-600">Цифровой двойник авторынка</span>
                 </div>
             </div>
         </footer>

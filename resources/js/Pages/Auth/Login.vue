@@ -1,6 +1,8 @@
 <script setup>
 import { useForm, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Components/Layout/AppLayout.vue';
+import Input from '@/Components/UI/Input.vue';
+import Button from '@/Components/UI/Button.vue';
 
 const form = useForm({
     email: '',
@@ -15,50 +17,29 @@ function submit() {
 
 <template>
     <AppLayout>
-        <div class="min-h-[60vh] flex items-center justify-center py-12 px-4">
+        <div class="min-h-[65vh] flex items-center justify-center py-16 px-4">
             <div class="w-full max-w-md">
-                <h1 class="text-2xl font-bold text-center mb-8">Вход в аккаунт</h1>
+                <div class="text-center mb-8">
+                    <h1 class="page-title">Вход в аккаунт</h1>
+                    <p class="page-subtitle">Добро пожаловать на AutoMarket</p>
+                </div>
 
-                <form @submit.prevent="submit" class="bg-white rounded-xl shadow-sm border p-8 space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input
-                            v-model="form.email"
-                            type="email"
-                            required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                        <p v-if="form.errors.email" class="mt-1 text-sm text-red-600">{{ form.errors.email }}</p>
-                    </div>
+                <form class="surface-panel p-8 space-y-5" @submit.prevent="submit">
+                    <Input v-model="form.email" label="Email" type="email" :error="form.errors.email" required />
+                    <Input v-model="form.password" label="Пароль" type="password" required />
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
-                        <input
-                            v-model="form.password"
-                            type="password"
-                            required
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        />
-                    </div>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input v-model="form.remember" type="checkbox" class="rounded border-outline text-primary focus:ring-primary" />
+                        <span class="text-sm text-on-surface-muted">Запомнить меня</span>
+                    </label>
 
-                    <div class="flex items-center justify-between">
-                        <label class="flex items-center">
-                            <input v-model="form.remember" type="checkbox" class="rounded border-gray-300 text-blue-600" />
-                            <span class="ml-2 text-sm text-gray-600">Запомнить</span>
-                        </label>
-                    </div>
-
-                    <button
-                        type="submit"
-                        :disabled="form.processing"
-                        class="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                    >
+                    <Button type="submit" :loading="form.processing" class="w-full !py-3">
                         Войти
-                    </button>
+                    </Button>
 
-                    <p class="text-center text-sm text-gray-600">
+                    <p class="text-center text-sm text-on-surface-muted pt-2">
                         Нет аккаунта?
-                        <Link href="/register" class="text-blue-600 hover:underline">Зарегистрироваться</Link>
+                        <Link href="/register" class="text-primary font-semibold hover:underline">Зарегистрироваться</Link>
                     </p>
                 </form>
             </div>
