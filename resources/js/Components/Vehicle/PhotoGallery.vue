@@ -15,7 +15,7 @@ const prev = () => { activeIndex.value = (activeIndex.value - 1 + props.photos.l
 <template>
     <div v-if="photos.length > 0">
         <div class="relative aspect-[4/3] bg-gray-100 rounded-xl overflow-hidden">
-            <img :src="photos[activeIndex]?.path" :alt="`Photo ${activeIndex + 1}`" class="w-full h-full object-cover" />
+            <img :src="photos[activeIndex]?.path ? `/storage/${photos[activeIndex].path}` : null" :alt="`Photo ${activeIndex + 1}`" class="w-full h-full object-cover" />
             <button
                 v-if="photos.length > 1"
                 class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full hover:bg-black/60"
@@ -42,7 +42,7 @@ const prev = () => { activeIndex.value = (activeIndex.value - 1 + props.photos.l
                 :class="i === activeIndex ? 'border-blue-500' : 'border-transparent'"
                 @click="setActive(i)"
             >
-                <img :src="photo.path" class="w-full h-full object-cover" />
+                <img :src="photo.path ? `/storage/${photo.path}` : null" class="w-full h-full object-cover" />
             </button>
         </div>
     </div>

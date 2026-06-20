@@ -170,6 +170,13 @@ Route::middleware('auth')->group(function () {
         // Parts Profile
         Route::prefix('parts')->name('parts.')->group(function () {
             Route::resource('products', ProductController::class);
+            // Cross-numbers
+            Route::post('/products/{product}/cross-numbers', [Src\Parts\Infrastructure\Http\Controllers\Cabinet\CrossNumberController::class, 'store'])->name('products.cross_numbers.store');
+            Route::delete('/products/{product}/cross-numbers/{crossNumber}', [Src\Parts\Infrastructure\Http\Controllers\Cabinet\CrossNumberController::class, 'destroy'])->name('products.cross_numbers.destroy');
+            // Applicability
+            Route::post('/products/{product}/applicabilities', [Src\Parts\Infrastructure\Http\Controllers\Cabinet\ApplicabilityController::class, 'store'])->name('products.applicabilities.store');
+            Route::delete('/products/{product}/applicabilities/{applicability}', [Src\Parts\Infrastructure\Http\Controllers\Cabinet\ApplicabilityController::class, 'destroy'])->name('products.applicabilities.destroy');
+
             Route::get('/import', [ProductImportController::class, 'create'])->name('import.create');
             Route::post('/import', [ProductImportController::class, 'store'])->name('import');
             Route::get('/orders', [PartsOrderController::class, 'index'])->name('orders.index');
@@ -182,8 +189,11 @@ Route::middleware('auth')->group(function () {
             Route::resource('masters', MasterController::class);
             Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule');
             Route::post('/schedule/slots', [ScheduleController::class, 'generateSlots'])->name('schedule.generate');
+            Route::patch('/schedule/slots/{slot}', [ScheduleController::class, 'updateSlot'])->name('schedule.slot.update');
+            Route::delete('/schedule/slots/{slot}', [ScheduleController::class, 'destroySlot'])->name('schedule.slot.destroy');
             Route::get('/appointments', [AppointmentManageController::class, 'index'])->name('appointments.index');
-            Route::put('/appointments/{appointment}', [AppointmentManageController::class, 'update'])->name('appointments.update');
+            Route::match(['put','patch'], '/appointments/{appointment}', [AppointmentManageController::class, 'update'])->name('appointments.update');
+            Route::delete('/appointments/{appointment}', [AppointmentManageController::class, 'destroy'])->name('appointments.destroy');
         });
     });
 

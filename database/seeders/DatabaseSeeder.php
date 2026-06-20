@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             CatalogSeeder::class,
             PlanSeeder::class,
+            ServiceCategorySeeder::class,
         ]);
 
         // Глобальные роли (super_admin, buyer) привязаны к team_id = 0

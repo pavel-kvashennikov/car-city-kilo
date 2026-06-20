@@ -305,7 +305,7 @@ const highlights = [
                     >
                         <div class="flex items-center gap-4 mb-4">
                             <div v-if="service.company?.logo_path" class="w-12 h-12 rounded-xl overflow-hidden shrink-0 ring-2 ring-outline">
-                                <img :src="service.company.logo_path" :alt="service.company.name" class="w-full h-full object-cover" />
+                                <img :src="`/storage/${service.company.logo_path}`" :alt="service.company.name" class="w-full h-full object-cover" />
                             </div>
                             <div v-else class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center shrink-0 shadow-sm">
                                 <span class="text-white font-bold text-lg">{{ service.company?.name?.charAt(0) }}</span>

@@ -17,7 +17,7 @@ class AppointmentManageController extends Controller
 
         $appointments = $serviceProfile
             ? $serviceProfile->appointments()
-                ->with(['serviceItem', 'master', 'timeSlot'])
+                ->with(['serviceItem', 'master', 'timeSlot', 'user'])
                 ->when($request->status, fn ($q, $s) => $q->where('status', $s))
                 ->latest()
                 ->paginate(20)
@@ -38,5 +38,12 @@ class AppointmentManageController extends Controller
         $appointment->update($validated);
 
         return back()->with('success', 'Статус записи обновлён.');
+    }
+
+    public function destroy(Appointment $appointment)
+    {
+        $appointment->delete();
+
+        return back()->with('success', 'Запись удалена.');
     }
 }

@@ -20,8 +20,9 @@ const slotsForDate = computed(() =>
 
 const fmtDate = (d) => {
     if (!d) return '';
-    const date = new Date(d + 'T00:00:00');
-    return date.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' });
+    const iso = String(d).includes('T') ? d : d + 'T00:00:00';
+    const date = new Date(iso);
+    return isNaN(date) ? d : date.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' });
 };
 const fmtTime = (t) => t ? t.slice(0, 5) : '';
 
@@ -71,7 +72,7 @@ function bookAppointment() {
                     <div class="card p-6">
                         <div class="flex items-center gap-4 mb-4">
                             <div v-if="service.company?.logo_path" class="w-14 h-14 rounded-xl overflow-hidden ring-2 ring-outline">
-                                <img :src="service.company.logo_path" :alt="service.company?.name" class="w-full h-full object-cover" />
+                                <img :src="`/storage/${service.company.logo_path}`" :alt="service.company?.name" class="w-full h-full object-cover" />
                             </div>
                             <div v-else class="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center shadow-sm">
                                 <span class="text-white font-bold text-xl">{{ service.company?.name?.charAt(0) }}</span>
@@ -125,7 +126,7 @@ function bookAppointment() {
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             <div v-for="master in service.masters" :key="master.id" class="text-center p-3 rounded-xl bg-surface-muted">
                                 <div class="w-14 h-14 rounded-full overflow-hidden mx-auto mb-2 ring-2 ring-outline">
-                                    <img v-if="master.photo_path" :src="master.photo_path" :alt="master.name" class="w-full h-full object-cover" />
+                                    <img v-if="master.photo_path" :src="`/storage/${master.photo_path}`" :alt="master.name" class="w-full h-full object-cover" />
                                     <div v-else class="w-full h-full bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center">
                                         <span class="text-white font-bold">{{ master.name?.charAt(0) }}</span>
                                     </div>

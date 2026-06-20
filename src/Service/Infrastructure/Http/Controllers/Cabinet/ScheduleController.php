@@ -22,6 +22,8 @@ class ScheduleController extends Controller
             ? $serviceProfile->timeSlots()
                 ->where('date', '>=', now()->startOfDay())
                 ->with('master')
+                ->when($request->status,    fn ($q, $s) => $q->where('status', $s))
+                ->when($request->master_id, fn ($q, $id) => $q->where('master_id', $id))
                 ->orderBy('date')
                 ->orderBy('start_time')
                 ->paginate(50)
@@ -71,5 +73,27 @@ class ScheduleController extends Controller
         }
 
         return back()->with('success', "Создано {$slotsCreated} слотов.");
+    }
+
+    public function updateSlot(Request $request, TimeSlot $slot)
+    {
+        $request->validate([
+            'status' => ['required', 'in:available,blocked'],
+        ]);
+
+        $slot->update(['status' => $request->status]);
+
+        return back()->with('success', 'Статус слота обновлён.');
+    }
+
+    public function destroySlot(TimeSlot $slot)
+    {
+        if ($slot->status === SlotStatus::BOOKED || $slot->status === SlotStatus::BOOKED->value) {
+            return back()->with('error', 'Нельзя удалить занятый слот.');
+        }
+
+        $slot->delete();
+
+        return back()->with('success', 'Слот удалён.');
     }
 }

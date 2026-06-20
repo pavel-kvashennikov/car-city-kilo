@@ -24,11 +24,16 @@ class ServiceItem extends Model
 
     protected $casts = [
         'vehicle_types' => 'array',
-        'is_active' => 'boolean',
+        'is_active'     => 'boolean',
     ];
 
     public function serviceProfile(): BelongsTo
     {
         return $this->belongsTo(ServiceProfile::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(ServiceCategory::class);
     }
 }

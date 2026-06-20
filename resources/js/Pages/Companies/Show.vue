@@ -33,7 +33,7 @@ const profileBadge = { dealer: 'badge-primary', parts: 'badge-success', service:
             <div class="card p-6">
                 <div class="flex items-start gap-5">
                     <div v-if="company.logo_path" class="w-16 h-16 rounded-xl overflow-hidden shrink-0 ring-2 ring-outline">
-                        <img :src="company.logo_path" :alt="company.name" class="w-full h-full object-cover" />
+                        <img :src="`/storage/${company.logo_path}`" :alt="company.name" class="w-full h-full object-cover" />
                     </div>
                     <div v-else class="w-16 h-16 rounded-xl bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center shrink-0 shadow-sm">
                         <span class="text-white font-bold text-2xl">{{ company.name?.charAt(0) }}</span>
