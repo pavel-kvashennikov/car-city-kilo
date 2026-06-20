@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
+use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
+use App\Http\Controllers\Admin\BlogPostController as AdminBlogPostController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Admin\BillingController as AdminBillingController;
 use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\Admin\CompanyManageController;
@@ -90,6 +93,10 @@ Route::get('/companies/{company:slug}', [CompanyController::class, 'show'])->nam
 
 // Market Map
 Route::get('/market-map', [Src\MarketMap\Infrastructure\Http\Controllers\MarketMapController::class, 'index'])->name('market-map');
+
+// Blog (public)
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -208,13 +215,45 @@ Route::middleware('auth')->group(function () {
         Route::put('/companies/{company}/approve', [CompanyManageController::class, 'approve'])->name('companies.approve');
         Route::put('/companies/{company}/reject', [CompanyManageController::class, 'reject'])->name('companies.reject');
         Route::put('/companies/{company}/suspend', [CompanyManageController::class, 'suspend'])->name('companies.suspend');
+        Route::put('/companies/{company}/reactivate', [CompanyManageController::class, 'reactivate'])->name('companies.reactivate');
         Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation.index');
         Route::put('/moderation/vehicles/{vehicle}/approve', [ModerationController::class, 'approveVehicle'])->name('moderation.vehicles.approve');
         Route::put('/moderation/vehicles/{vehicle}/reject', [ModerationController::class, 'rejectVehicle'])->name('moderation.vehicles.reject');
         Route::get('/billing', [AdminBillingController::class, 'index'])->name('billing.index');
         Route::get('/billing/plans', [PlanController::class, 'index'])->name('plans.index');
         Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
+        // Brands
+        Route::post('/catalog/brands', [CatalogController::class, 'storeBrand'])->name('catalog.brands.store');
+        Route::put('/catalog/brands/{brand}', [CatalogController::class, 'updateBrand'])->name('catalog.brands.update');
+        Route::delete('/catalog/brands/{brand}', [CatalogController::class, 'destroyBrand'])->name('catalog.brands.destroy');
+        // Models
+        Route::post('/catalog/models', [CatalogController::class, 'storeModel'])->name('catalog.models.store');
+        Route::put('/catalog/models/{model}', [CatalogController::class, 'updateModel'])->name('catalog.models.update');
+        Route::delete('/catalog/models/{model}', [CatalogController::class, 'destroyModel'])->name('catalog.models.destroy');
+        // Generations
+        Route::post('/catalog/generations', [CatalogController::class, 'storeGeneration'])->name('catalog.generations.store');
+        Route::delete('/catalog/generations/{generation}', [CatalogController::class, 'destroyGeneration'])->name('catalog.generations.destroy');
+        // Part categories
+        Route::post('/catalog/categories', [CatalogController::class, 'storeCategory'])->name('catalog.categories.store');
+        Route::put('/catalog/categories/{category}', [CatalogController::class, 'updateCategory'])->name('catalog.categories.update');
+        Route::delete('/catalog/categories/{category}', [CatalogController::class, 'destroyCategory'])->name('catalog.categories.destroy');
         Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/market-map', [MarketMapController::class, 'index'])->name('market-map');
+
+        // Blog management
+        Route::resource('/blog/posts', AdminBlogPostController::class)->names([
+            'index'   => 'blog.posts.index',
+            'create'  => 'blog.posts.create',
+            'store'   => 'blog.posts.store',
+            'edit'    => 'blog.posts.edit',
+            'update'  => 'blog.posts.update',
+            'destroy' => 'blog.posts.destroy',
+        ]);
+        Route::get('/blog/categories', [AdminBlogCategoryController::class, 'index'])->name('blog.categories.index');
+        Route::post('/blog/categories', [AdminBlogCategoryController::class, 'storeCategory'])->name('blog.categories.store');
+        Route::put('/blog/categories/{category}', [AdminBlogCategoryController::class, 'updateCategory'])->name('blog.categories.update');
+        Route::delete('/blog/categories/{category}', [AdminBlogCategoryController::class, 'destroyCategory'])->name('blog.categories.destroy');
+        Route::post('/blog/tags', [AdminBlogCategoryController::class, 'storeTag'])->name('blog.tags.store');
+        Route::delete('/blog/tags/{tag}', [AdminBlogCategoryController::class, 'destroyTag'])->name('blog.tags.destroy');
     });
 });

@@ -22,7 +22,8 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user'    => $request->user(),
+                'isAdmin' => fn () => $request->user()?->hasRole('super_admin') ?? false,
                 'favoritedVehicleIds' => fn () => $request->user()
                     ?->favorites()
                     ->where('favoriteable_type', Vehicle::class)

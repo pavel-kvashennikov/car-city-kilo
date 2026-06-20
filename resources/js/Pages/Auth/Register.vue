@@ -24,7 +24,7 @@ function submit() {
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center shadow-md">
                         <Car class="w-5 h-5 text-white" />
                     </div>
-                    <span class="text-xl font-extrabold text-gradient">AutoMarket</span>
+                    <span class="text-xl font-extrabold text-gradient">Город машин</span>
                 </Link>
                 <h1 class="text-xl font-bold text-on-surface mt-5">Создать аккаунт</h1>
                 <p class="text-sm text-on-surface-muted mt-1">Регистрация покупателя — это бесплатно</p>

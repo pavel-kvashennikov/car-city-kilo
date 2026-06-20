@@ -48,7 +48,7 @@ const isActive = (href) => currentUrl.value === href || (href !== '/cabinet' && 
                         <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center shadow-sm">
                             <Car class="w-3.5 h-3.5 text-white" />
                         </div>
-                        <span class="font-bold text-gradient hidden sm:inline">AutoMarket</span>
+                        <span class="font-bold text-gradient hidden sm:inline">Город машин</span>
                     </Link>
                     <span class="text-xs px-2 py-0.5 rounded-full bg-primary-light text-primary font-bold">Кабинет</span>
                     <span v-if="company" class="hidden md:inline text-on-surface-muted text-sm border-l border-outline pl-3 ml-1">{{ company.name }}</span>

@@ -3,7 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import {
     Car, Shield, LayoutDashboard, Building2, AlertCircle, MapPin,
-    BookOpen, CreditCard, BarChart2, LogOut
+    BookOpen, CreditCard, BarChart2, LogOut, Newspaper
 } from 'lucide-vue-next';
 
 const page = usePage();
@@ -18,6 +18,7 @@ const navigation = [
     { name: 'Каталог', href: '/admin/catalog', icon: BookOpen },
     { name: 'Биллинг', href: '/admin/billing', icon: CreditCard },
     { name: 'Аналитика', href: '/admin/analytics', icon: BarChart2 },
+    { name: 'Блог', href: '/admin/blog/posts', icon: Newspaper },
 ];
 
 const isActive = (href) => href === '/admin' ? currentUrl.value === '/admin' : currentUrl.value.startsWith(href);
@@ -33,7 +34,7 @@ const isActive = (href) => href === '/admin' ? currentUrl.value === '/admin' : c
                         <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center">
                             <Car class="w-3.5 h-3.5 text-white" />
                         </div>
-                        <span class="font-bold hidden sm:inline">AutoMarket</span>
+                        <span class="font-bold hidden sm:inline">Город машин</span>
                     </Link>
                     <span class="inline-flex items-center gap-1 text-xs px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-300 font-bold border border-red-500/30">
                         <Shield class="w-3 h-3" /> Администратор

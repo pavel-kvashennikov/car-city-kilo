@@ -16,15 +16,34 @@ class CompanyManageController extends Controller
     {
         $companies = Company::query()
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
-            ->when($request->search, fn ($q, $s) => $q->where('name', 'ilike', "%{$s}%"))
-            ->with('owner')
+            ->when($request->search, fn ($q, $s) =>
+                $q->where(fn ($q) =>
+                    $q->where('name', 'ilike', "%{$s}%")
+                      ->orWhere('inn', 'ilike', "%{$s}%")
+                      ->orWhere('email', 'ilike', "%{$s}%")
+                )
+            )
+            ->with(['owner', 'businessProfiles'])
+            ->withCount('businessProfiles')
             ->latest()
             ->paginate(20);
 
         return Inertia::render('Admin/Companies/Index', [
             'companies' => $companies,
-            'filters' => $request->only(['status', 'search']),
+            'filters'   => $request->only(['status', 'search']),
+            'counts'    => [
+                'total'     => Company::count(),
+                'pending'   => Company::where('status', 'pending')->count(),
+                'active'    => Company::where('status', 'active')->count(),
+                'suspended' => Company::where('status', 'suspended')->count(),
+            ],
         ]);
+    }
+
+    public function reactivate(Company $company)
+    {
+        $company->update(['status' => CompanyStatus::ACTIVE, 'verified_at' => now(), 'reject_reason' => null]);
+        return back()->with('success', 'Компания восстановлена.');
     }
 
     public function approve(Company $company)

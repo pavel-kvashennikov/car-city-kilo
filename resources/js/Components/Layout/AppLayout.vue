@@ -1,12 +1,13 @@
 <script setup>
 import { Link, usePage, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
-import { Menu, X, ShoppingCart, User, Search, Car, MapPin, Wrench, Settings, LogOut, LayoutDashboard, Heart, CalendarCheck, Package, ChevronDown } from 'lucide-vue-next';
+import { Menu, X, ShoppingCart, User, Search, Car, MapPin, Wrench, Settings, LogOut, LayoutDashboard, Heart, CalendarCheck, Package, ChevronDown, Shield } from 'lucide-vue-next';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const company = computed(() => page.props.company);
 const isTenant = computed(() => !!company.value);
+const isAdmin = computed(() => page.props.auth?.isAdmin ?? false);
 
 const mobileMenuOpen = ref(false);
 const userMenuOpen = ref(false);
@@ -18,6 +19,7 @@ const navigation = [
     { name: 'Сервисы', href: '/catalog/services', icon: Wrench },
     { name: 'Компании', href: '/companies', icon: null },
     { name: 'Карта рынка', href: '/market-map', icon: MapPin },
+    { name: 'Блог', href: '/blog', icon: null },
 ];
 
 const isActive = (href) => currentUrl.value.startsWith(href);
@@ -40,7 +42,7 @@ function logout() {
                             <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
                                 <Car class="w-4 h-4 text-white" />
                             </div>
-                            <span class="text-base font-bold text-gradient">AutoMarket</span>
+                            <span class="text-base font-bold text-gradient">Город машин</span>
                         </Link>
 
                         <nav class="hidden lg:flex items-center gap-0.5">
@@ -104,6 +106,14 @@ function logout() {
                                         <div class="px-4 py-3 border-b border-outline">
                                             <p class="font-semibold text-sm text-on-surface truncate">{{ user.name }}</p>
                                             <p class="text-xs text-on-surface-muted truncate">{{ user.email }}</p>
+                                        </div>
+
+                                        <!-- Admin shortcut -->
+                                        <div v-if="isAdmin" class="py-1 border-b border-outline">
+                                            <Link href="/admin" @click="userMenuOpen = false"
+                                                class="flex items-center gap-2.5 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary/5 transition-colors">
+                                                <Shield class="w-4 h-4" /> Панель администратора
+                                            </Link>
                                         </div>
 
                                         <!-- Tenant (company owner/manager) menu -->
@@ -189,6 +199,12 @@ function logout() {
                         <template v-if="user">
                             <p class="text-xs text-on-surface-muted px-2 mb-2 font-semibold uppercase tracking-wide">{{ user.name }}</p>
 
+                            <!-- Admin mobile link -->
+                            <Link v-if="isAdmin" href="/admin" @click="mobileMenuOpen = false"
+                                class="flex items-center gap-2 nav-link text-sm font-semibold text-primary">
+                                <Shield class="w-4 h-4" /> Панель администратора
+                            </Link>
+
                             <!-- Tenant mobile links -->
                             <template v-if="isTenant">
                                 <Link href="/cabinet" @click="mobileMenuOpen = false"
@@ -252,7 +268,7 @@ function logout() {
                             <div class="w-7 h-7 rounded-md bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center">
                                 <Car class="w-3.5 h-3.5 text-white" />
                             </div>
-                            <span class="font-bold">AutoMarket</span>
+                            <span class="font-bold">Город машин</span>
                         </div>
                         <p class="text-gray-400 text-sm leading-relaxed">
                             Единый портал городского авторынка. Авто, запчасти и сервис от проверенных резидентов.
@@ -265,6 +281,7 @@ function logout() {
                             <li><Link href="/catalog/parts" class="hover:text-white transition-colors">Запчасти</Link></li>
                             <li><Link href="/catalog/services" class="hover:text-white transition-colors">Автосервисы</Link></li>
                             <li><Link href="/market-map" class="hover:text-white transition-colors">Карта рынка</Link></li>
+                            <li><Link href="/blog" class="hover:text-white transition-colors">Блог</Link></li>
                         </ul>
                     </div>
                     <div>
@@ -287,7 +304,7 @@ function logout() {
                     </div>
                 </div>
                 <div class="border-t border-gray-800 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-gray-600">
-                    <span>&copy; {{ new Date().getFullYear() }} AutoMarket. Все права защищены.</span>
+                    <span>&copy; {{ new Date().getFullYear() }} Город машин. Все права защищены.</span>
                     <span>Цифровой двойник авторынка города</span>
                 </div>
             </div>

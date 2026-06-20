@@ -43,7 +43,7 @@ class AppointmentConfirmedNotification extends Notification implements ShouldQue
     {
         $slot = $this->appointment->timeSlot;
 
-        return 'AutoMarket: Запись на сервис подтверждена. '
+        return 'Город машин: Запись на сервис подтверждена. '
             ."Дата: {$slot?->date}, Время: {$slot?->start_time}";
     }
 

@@ -39,7 +39,7 @@ class OrderPlacedNotification extends Notification implements ShouldQueue
 
     public function toSms(object $notifiable): string
     {
-        return "AutoMarket: Заказ {$this->order->order_number} оформлен. "
+        return "Город машин: Заказ {$this->order->order_number} оформлен. "
             .'Сумма: '.number_format($this->order->total_amount / 100, 0, '.', ' ').' ₽';
     }
 

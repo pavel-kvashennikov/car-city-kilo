@@ -5,7 +5,7 @@ import { createSSRApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { createPinia } from 'pinia';
 
-const appName = import.meta.env.VITE_APP_NAME || 'AutoMarket';
+const appName = import.meta.env.VITE_APP_NAME || 'Город машин';
 
 createServer((page) =>
     createInertiaApp({
