@@ -1,11 +1,11 @@
 <script setup>
 import AppLayout from '@/Components/Layout/AppLayout.vue';
 import VehicleCard from '@/Components/Catalog/VehicleCard.vue';
-import { Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 import {
     ChevronLeft, Phone, CalendarCheck, CreditCard, ArrowLeftRight,
-    Gauge, Fuel, Settings, Car, Palette, ShieldCheck, Star, MapPin
+    Gauge, Fuel, Settings, Car, Palette, ShieldCheck, Star, MapPin, X
 } from 'lucide-vue-next';
 import { mediaUrl } from '@/lib/mediaUrl';
 
@@ -14,32 +14,54 @@ const props = defineProps({
     similar: Array,
 });
 
+const page = usePage();
+const authUser = computed(() => page.props.auth?.user);
+
 const activePhoto = ref(0);
 
 const fmt = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
-const km = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' км';
+const km  = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' км';
 
 const photoSrc = (photo) => mediaUrl(photo?.url ?? photo?.path);
 
-const transmissionLabel = {
-    automatic: 'Автомат', manual: 'Механика', robot: 'Робот', cvt: 'Вариатор',
-};
-const driveLabel = {
-    fwd: 'Передний', rwd: 'Задний', awd: 'Полный', front: 'Передний', rear: 'Задний', all: 'Полный',
-};
-const conditionLabel = {
-    new: 'Новый', used: 'С пробегом', damaged: 'Битый/восстановленный',
-};
-const engineLabel = {
-    petrol: 'Бензин', diesel: 'Дизель', hybrid: 'Гибрид', electric: 'Электро', gas: 'Газ',
+const transmissionLabel = { automatic: 'Автомат', manual: 'Механика', robot: 'Робот', cvt: 'Вариатор' };
+const driveLabel        = { fwd: 'Передний', rwd: 'Задний', awd: 'Полный', front: 'Передний', rear: 'Задний', all: 'Полный' };
+const conditionLabel    = { new: 'Новый', used: 'С пробегом', damaged: 'Битый/восстановленный' };
+const engineLabel       = { petrol: 'Бензин', diesel: 'Дизель', hybrid: 'Гибрид', electric: 'Электро', gas: 'Газ' };
+
+// ── Lead modal ───────────────────────────────────────────────────────────────
+const showModal  = ref(false);
+const leadSent   = ref(false);
+const leadTypeInfo = {
+    test_drive: { title: 'Записаться на тест-драйв',  icon: CalendarCheck, hint: 'Мы свяжемся с вами для уточнения времени визита' },
+    credit:     { title: 'Рассчитать кредит',          icon: CreditCard,    hint: 'Менеджер подберёт лучшие условия кредитования' },
+    trade_in:   { title: 'Обменять по Trade-in',       icon: ArrowLeftRight, hint: 'Оставьте контакты — специалист оценит ваш автомобиль' },
+    callback:   { title: 'Заказать обратный звонок',  icon: Phone,          hint: 'Мы перезвоним в течение 15 минут' },
 };
 
-// Lead form
-const leadForm = useForm({ client_name: '', client_phone: '', message: '', lead_type: 'test_drive', vehicle_id: props.vehicle?.id, dealer_profile_id: props.vehicle?.dealer_profile_id });
-const leadSent = ref(false);
-function submitLead(type) {
-    leadForm.lead_type = type;
-    leadForm.post('/leads', { onSuccess: () => { leadSent.value = true; } });
+const leadForm = useForm({
+    client_name:  '',
+    client_phone: '',
+    message:      '',
+    lead_type:    'test_drive',
+    vehicle_id:   props.vehicle?.id,
+});
+
+function openLead(type) {
+    leadForm.lead_type    = type;
+    leadForm.client_name  = authUser.value?.name  ?? '';
+    leadForm.client_phone = authUser.value?.phone ?? '';
+    leadForm.message      = '';
+    showModal.value = true;
+}
+
+function submitLead() {
+    leadForm.post('/leads', {
+        onSuccess: () => {
+            leadSent.value  = true;
+            showModal.value = false;
+        },
+    });
 }
 </script>
 
@@ -166,20 +188,20 @@ function submitLead(type) {
 
                         <!-- Actions -->
                         <div v-if="!leadSent" class="mt-5 space-y-2.5">
-                            <button class="w-full btn-primary !py-2.5 !text-sm !justify-center">
-                                <Phone class="w-4 h-4" /> Позвонить
+                            <button @click="openLead('callback')" class="w-full btn-primary !py-2.5 !text-sm !justify-center">
+                                <Phone class="w-4 h-4" /> Позвонить / Перезвонить
                             </button>
-                            <button @click="submitLead('test_drive')" class="w-full btn-secondary !py-2.5 !text-sm !justify-center">
+                            <button @click="openLead('test_drive')" class="w-full btn-secondary !py-2.5 !text-sm !justify-center">
                                 <CalendarCheck class="w-4 h-4" /> Тест-драйв
                             </button>
-                            <button @click="submitLead('credit')" class="w-full btn-secondary !py-2.5 !text-sm !justify-center">
+                            <button @click="openLead('credit')" class="w-full btn-secondary !py-2.5 !text-sm !justify-center">
                                 <CreditCard class="w-4 h-4" /> Рассчитать кредит
                             </button>
-                            <button @click="submitLead('trade_in')" class="w-full btn-secondary !py-2.5 !text-sm !justify-center">
+                            <button @click="openLead('trade_in')" class="w-full btn-secondary !py-2.5 !text-sm !justify-center">
                                 <ArrowLeftRight class="w-4 h-4" /> Trade-in
                             </button>
                         </div>
-                        <div v-else class="mt-5 p-4 rounded-xl bg-success-bg text-center text-sm text-success font-semibold">
+                        <div v-else class="mt-5 p-4 rounded-xl bg-success/10 text-center text-sm text-success font-semibold">
                             ✓ Заявка отправлена! Менеджер свяжется с вами.
                         </div>
                     </div>
@@ -194,5 +216,63 @@ function submitLead(type) {
                 </div>
             </div>
         </div>
+        <!-- Lead modal -->
+        <Teleport to="body">
+            <Transition enter-active-class="transition duration-200" enter-from-class="opacity-0" enter-to-class="opacity-100"
+                leave-active-class="transition duration-150" leave-from-class="opacity-100" leave-to-class="opacity-0">
+                <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                    @click.self="showModal = false">
+                    <div class="bg-surface rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5">
+                        <!-- Header -->
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-bright to-primary flex items-center justify-center shrink-0">
+                                    <component :is="leadTypeInfo[leadForm.lead_type]?.icon" class="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-on-surface">{{ leadTypeInfo[leadForm.lead_type]?.title }}</h3>
+                                    <p class="text-xs text-on-surface-muted mt-0.5">{{ vehicle.brand?.name }} {{ vehicle.car_model?.name }}, {{ vehicle.year }}</p>
+                                </div>
+                            </div>
+                            <button @click="showModal = false" class="p-1.5 rounded-lg hover:bg-surface-muted transition-colors">
+                                <X class="w-4 h-4 text-on-surface-muted" />
+                            </button>
+                        </div>
+
+                        <p class="text-sm text-on-surface-muted">{{ leadTypeInfo[leadForm.lead_type]?.hint }}</p>
+
+                        <form @submit.prevent="submitLead" class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-on-surface-muted mb-1.5">Ваше имя *</label>
+                                <input v-model="leadForm.client_name" required placeholder="Иван Иванов"
+                                    class="input-field w-full" :class="{ 'border-danger': leadForm.errors.client_name }" />
+                                <p v-if="leadForm.errors.client_name" class="text-xs text-danger mt-1">{{ leadForm.errors.client_name }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-on-surface-muted mb-1.5">Телефон *</label>
+                                <input v-model="leadForm.client_phone" required type="tel" placeholder="+7 (999) 000-00-00"
+                                    class="input-field w-full" :class="{ 'border-danger': leadForm.errors.client_phone }" />
+                                <p v-if="leadForm.errors.client_phone" class="text-xs text-danger mt-1">{{ leadForm.errors.client_phone }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-on-surface-muted mb-1.5">Комментарий</label>
+                                <textarea v-model="leadForm.message" rows="3" placeholder="Удобное время, пожелания..."
+                                    class="input-field w-full resize-none"></textarea>
+                            </div>
+                            <div class="flex gap-3 pt-1">
+                                <button type="button" @click="showModal = false"
+                                    class="flex-1 btn-secondary !py-2.5 !text-sm !justify-center">
+                                    Отмена
+                                </button>
+                                <button type="submit" class="flex-1 btn-primary !py-2.5 !text-sm !justify-center"
+                                    :disabled="leadForm.processing">
+                                    {{ leadForm.processing ? 'Отправка...' : 'Отправить заявку' }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </Transition>
+        </Teleport>
     </AppLayout>
 </template>

@@ -135,12 +135,42 @@ location / {
 }
 ```
 
+### Алиас `dc-prod`
+
+`dc-prod` — **не системная команда**, а короткий алиас для длинной строки:
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml
+```
+
+Создайте один раз (из корня проекта или с любого места):
+
+```bash
+# Временно — только в текущей сессии терминала
+alias dc-prod='docker compose --env-file .env.prod -f docker-compose.prod.yml'
+
+# Постоянно — добавить в ~/.bashrc
+echo "alias dc-prod='docker compose --env-file .env.prod -f docker-compose.prod.yml'" >> ~/.bashrc
+source ~/.bashrc
+```
+
+Проверка:
+
+```bash
+dc-prod ps
+```
+
+Если `command not found` — алиас не создан. Используйте полную команду:
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml ps
+```
+
+Ниже в примерах используется `dc-prod` — при необходимости заменяйте на полную форму.
+
 ### Полезные команды
 
 ```bash
-# Алиас для удобства (опционально)
-alias dc-prod='docker compose --env-file .env.prod -f docker-compose.prod.yml'
-
 # Статус и логи
 dc-prod ps
 dc-prod logs -f
