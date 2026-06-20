@@ -1,147 +1,218 @@
 <script setup>
 import AppLayout from '@/Components/Layout/AppLayout.vue';
-import { Link } from '@inertiajs/vue3';
+import MarketMap from '@/Components/Map/MarketMap.vue';
 import { ref, computed } from 'vue';
-import { MapPin, Building2 } from 'lucide-vue-next';
+import { MapPin, Building2, Store, Car } from 'lucide-vue-next';
 
 const props = defineProps({ zones: Array });
-const selectedZone = ref(null);
 
-const zoneColors = [
-    'bg-blue-500', 'bg-teal-500', 'bg-violet-500', 'bg-amber-500',
-    'bg-rose-500', 'bg-indigo-500', 'bg-emerald-500', 'bg-orange-500',
-];
+const selectedZone = ref(null);
+const selectedLocation = ref(null);
+const selectedStall = ref(null);
+
+const palette = ['#2563eb', '#0d9488', '#d97706', '#7c3aed', '#db2777', '#4f46e5', '#059669', '#ea580c'];
+const zoneColor = (zone, i) => zone?.svg_path?.color || palette[i % palette.length];
+
+const sortedZones = computed(() => props.zones ?? []);
+
+const totals = computed(() => {
+    let occupied = 0, available = 0, total = 0;
+    for (const z of sortedZones.value) {
+        for (const l of z.locations ?? []) {
+            total++;
+            if (l.status === 'occupied') occupied++;
+            else available++;
+        }
+    }
+    return { occupied, available, total };
+});
 
 const occupancyRate = (zone) => {
     if (!zone.locations?.length) return 0;
-    return Math.round(zone.locations.filter(l => l.status === 'occupied').length / zone.locations.length * 100);
+    return Math.round(zone.locations.filter((l) => l.status === 'occupied').length / zone.locations.length * 100);
 };
 
-const sortedZones = computed(() => props.zones ?? []);
+const onSelect = (payload) => {
+    if (payload.kind === 'stall') {
+        selectedStall.value = payload.stall;
+        selectedLocation.value = null;
+        return;
+    }
+    const { location, zone } = payload;
+    selectedStall.value = null;
+    selectedLocation.value = location;
+    selectedZone.value = zone ?? sortedZones.value.find((z) => z.id === location.zone?.id) ?? null;
+};
+
+const selectLocation = (location, zone) => onSelect({ kind: 'pavilion', location, zone });
+
+const pickZone = (zone) => {
+    selectedZone.value = selectedZone.value?.id === zone.id ? null : zone;
+    selectedLocation.value = null;
+    selectedStall.value = null;
+};
+
+const selectedCode = computed(() => selectedStall.value?.code ?? selectedLocation.value?.code ?? null);
+
+const statusLabel = { occupied: 'Занят', available: 'Свободен', reserved: 'Бронь', maintenance: 'Ремонт' };
 </script>
 
 <template>
     <AppLayout>
         <div class="container-app py-7">
-            <div class="mb-7">
-                <h1 class="page-title">Карта авторынка</h1>
-                <p class="page-subtitle">Схема расположения павильонов и компаний-резидентов</p>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- SVG Map placeholder -->
-                <div class="lg:col-span-2 card overflow-hidden" style="min-height:480px">
-                    <!-- Mini visual map -->
-                    <div class="p-4 bg-surface-muted border-b border-outline text-xs text-on-surface-muted flex items-center gap-2">
-                        <MapPin class="w-3.5 h-3.5 text-primary" />
-                        Интерактивная схема — кликните на зону для просмотра
+            <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <h1 class="page-title">Карта авторынка</h1>
+                    <p class="page-subtitle">Схема расположения павильонов и компаний-резидентов</p>
+                </div>
+                <div class="flex gap-2">
+                    <div class="rounded-xl border border-outline bg-white px-4 py-2 text-center">
+                        <p class="text-lg font-bold text-on-surface">{{ totals.total }}</p>
+                        <p class="text-xs text-on-surface-muted">павильонов</p>
                     </div>
-                    <div class="p-6 flex flex-col items-center justify-center h-full min-h-[400px]">
-                        <!-- Stylized grid map -->
-                        <div class="grid grid-cols-3 gap-3 w-full max-w-lg">
-                            <div
-                                v-for="(zone, i) in sortedZones"
-                                :key="zone.id"
-                                class="relative rounded-xl border-2 p-4 cursor-pointer transition-all"
-                                :class="[
-                                    selectedZone?.id === zone.id
-                                        ? 'border-primary-bright bg-primary-light shadow-md'
-                                        : 'border-outline hover:border-primary/40 hover:bg-surface-muted bg-white',
-                                ]"
-                                @click="selectedZone = zone"
-                            >
-                                <div :class="['w-8 h-8 rounded-lg flex items-center justify-center mb-2 text-white text-xs font-bold', zoneColors[i % zoneColors.length]]">
-                                    {{ zone.code || (i + 1) }}
-                                </div>
-                                <p class="font-semibold text-xs text-on-surface truncate">{{ zone.name }}</p>
-                                <div class="mt-2">
-                                    <div class="h-1 rounded-full bg-outline overflow-hidden">
-                                        <div
-                                            class="h-full rounded-full bg-gradient-to-r from-primary to-primary-bright transition-all"
-                                            :style="{ width: occupancyRate(zone) + '%' }"
-                                        />
-                                    </div>
-                                    <p class="text-xs text-on-surface-muted mt-1">{{ occupancyRate(zone) }}% занято</p>
-                                </div>
-                            </div>
-
-                            <!-- Empty placeholder when no zones -->
-                            <div v-if="!sortedZones.length" class="col-span-3 text-center py-12">
-                                <MapPin class="w-12 h-12 text-outline mx-auto mb-3" />
-                                <p class="text-sm text-on-surface-muted">Данные карты загружаются</p>
-                            </div>
-                        </div>
+                    <div class="rounded-xl border border-outline bg-white px-4 py-2 text-center">
+                        <p class="text-lg font-bold text-primary">{{ totals.occupied }}</p>
+                        <p class="text-xs text-on-surface-muted">занято</p>
+                    </div>
+                    <div class="rounded-xl border border-outline bg-white px-4 py-2 text-center">
+                        <p class="text-lg font-bold text-success">{{ totals.available }}</p>
+                        <p class="text-xs text-on-surface-muted">свободно</p>
                     </div>
                 </div>
+            </div>
 
-                <!-- Sidebar -->
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <!-- Карта -->
+                <div class="lg:col-span-2">
+                    <div class="mb-2 flex items-center gap-2 text-xs text-on-surface-muted">
+                        <MapPin class="h-3.5 h-3.5 w-3.5 text-primary" />
+                        Кликните по павильону или парковочному месту · колесо мыши — масштаб · перетаскивание — сдвиг
+                    </div>
+                    <MarketMap
+                        :zones="sortedZones"
+                        :selected-code="selectedCode"
+                        @select="onSelect"
+                    />
+                </div>
+
+                <!-- Сайдбар -->
                 <div class="space-y-4">
-                    <!-- Zone list -->
+                    <!-- Детали выбранного парковочного места -->
+                    <div v-if="selectedStall" class="card p-4">
+                        <div class="mb-2 flex items-center justify-between">
+                            <span class="flex items-center gap-2 font-mono text-sm font-bold text-on-surface">
+                                <Car class="h-4 w-4 text-primary" /> {{ selectedStall.code }}
+                            </span>
+                            <span class="badge" :class="selectedStall.occupied ? 'badge-primary' : 'badge-success'">
+                                {{ selectedStall.occupied ? 'Занято' : 'Свободно' }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-on-surface-muted">
+                            Парковочное место. В дальнейшем сюда можно будет привязать объявление о продаже автомобиля.
+                        </p>
+                    </div>
+
+                    <!-- Детали выбранного павильона -->
+                    <div v-if="selectedLocation" class="card p-4">
+                        <div class="mb-3 flex items-center justify-between">
+                            <span class="font-mono text-sm font-bold text-on-surface">{{ selectedLocation.code }}</span>
+                            <span
+                                class="badge"
+                                :class="{
+                                    'badge-success': selectedLocation.status === 'available',
+                                    'badge-primary': selectedLocation.status === 'occupied',
+                                    'badge-warning': selectedLocation.status === 'reserved',
+                                }"
+                            >{{ statusLabel[selectedLocation.status] || selectedLocation.status }}</span>
+                        </div>
+                        <div v-if="selectedLocation.company" class="rounded-xl bg-primary-light p-3">
+                            <div class="flex items-center gap-2">
+                                <Store class="h-4 w-4 text-primary" />
+                                <p class="font-semibold text-sm text-primary">{{ selectedLocation.company.name }}</p>
+                            </div>
+                            <p v-if="selectedLocation.type" class="mt-1 text-xs text-on-surface-muted">
+                                Тип места: {{ selectedLocation.type }}
+                            </p>
+                        </div>
+                        <p v-else class="text-sm text-success">Павильон свободен — доступен для аренды</p>
+                    </div>
+
+                    <!-- Список зон -->
                     <div class="card p-4">
-                        <h3 class="font-bold text-sm text-on-surface mb-3">Зоны рынка</h3>
+                        <h3 class="mb-3 font-bold text-sm text-on-surface">Зоны рынка</h3>
                         <div class="space-y-2">
                             <button
                                 v-for="(zone, i) in sortedZones"
                                 :key="zone.id"
-                                class="w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left"
+                                class="flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-all"
                                 :class="selectedZone?.id === zone.id
                                     ? 'border-primary-bright bg-primary-light'
                                     : 'border-outline hover:border-primary/40 hover:bg-surface-muted'"
-                                @click="selectedZone = selectedZone?.id === zone.id ? null : zone"
+                                @click="pickZone(zone)"
                             >
-                                <div :class="['w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0', zoneColors[i % zoneColors.length]]">
-                                    {{ zone.code || (i + 1) }}
-                                </div>
+                                <span
+                                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white"
+                                    :style="{ backgroundColor: zoneColor(zone, i) }"
+                                >{{ zone.code || i + 1 }}</span>
                                 <div class="min-w-0 flex-1">
-                                    <p class="font-semibold text-xs text-on-surface truncate">{{ zone.name }}</p>
+                                    <p class="truncate font-semibold text-xs text-on-surface">{{ zone.name }}</p>
                                     <p class="text-xs text-on-surface-muted">
-                                        <span class="text-success font-medium">{{ zone.locations?.filter(l => l.status === 'available').length || 0 }}</span> свободно ·
-                                        <span class="text-primary font-medium">{{ zone.locations?.filter(l => l.status === 'occupied').length || 0 }}</span> занято
+                                        <span class="font-medium text-success">{{ zone.locations?.filter((l) => l.status === 'available').length || 0 }}</span> свободно ·
+                                        <span class="font-medium text-primary">{{ zone.locations?.filter((l) => l.status === 'occupied').length || 0 }}</span> занято
                                     </p>
                                 </div>
+                                <span class="text-xs font-semibold text-on-surface-muted">{{ occupancyRate(zone) }}%</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Selected zone details -->
+                    <!-- Павильоны выбранной зоны -->
                     <div v-if="selectedZone" class="card p-4">
-                        <h4 class="font-bold text-sm text-on-surface mb-3 flex items-center gap-2">
-                            <Building2 class="w-4 h-4 text-primary" />
-                            {{ selectedZone.name }} — павильоны
+                        <h4 class="mb-3 flex items-center gap-2 font-bold text-sm text-on-surface">
+                            <Building2 class="h-4 w-4 text-primary" />
+                            {{ selectedZone.name }}
                         </h4>
-                        <div class="space-y-1.5 max-h-72 overflow-y-auto pr-1">
-                            <div
+                        <div class="max-h-72 space-y-1.5 overflow-y-auto pr-1">
+                            <button
                                 v-for="loc in selectedZone.locations"
                                 :key="loc.id"
-                                class="flex justify-between items-center py-2.5 px-3 rounded-xl"
-                                :class="loc.status === 'occupied' ? 'bg-primary-light' : 'bg-surface-muted'"
+                                class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left"
+                                :class="[
+                                    loc.status === 'occupied' ? 'bg-primary-light' : 'bg-surface-muted',
+                                    selectedLocation?.code === loc.code ? 'ring-2 ring-primary-bright' : '',
+                                ]"
+                                @click="selectLocation(loc, selectedZone)"
                             >
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-mono font-bold text-on-surface">{{ loc.code }}</span>
+                                <span class="flex items-center gap-2">
+                                    <span class="font-mono text-xs font-bold text-on-surface">{{ loc.code }}</span>
                                     <span v-if="loc.type" class="badge badge-neutral text-xs">{{ loc.type }}</span>
-                                </div>
-                                <span v-if="loc.company" class="text-xs font-semibold text-primary truncate max-w-[120px]">
+                                </span>
+                                <span v-if="loc.company" class="max-w-[120px] truncate text-xs font-semibold text-primary">
                                     {{ loc.company.name }}
                                 </span>
-                                <span v-else class="text-xs text-success font-medium">Свободен</span>
-                            </div>
-                            <p v-if="!selectedZone.locations?.length" class="text-xs text-on-surface-muted text-center py-4">
+                                <span v-else class="text-xs font-medium text-success">Свободен</span>
+                            </button>
+                            <p v-if="!selectedZone.locations?.length" class="py-4 text-center text-xs text-on-surface-muted">
                                 Нет данных о павильонах
                             </p>
                         </div>
                     </div>
 
-                    <!-- Legend -->
+                    <!-- Легенда -->
                     <div class="card p-4">
-                        <h4 class="font-bold text-xs text-on-surface-muted uppercase tracking-wide mb-3">Легенда</h4>
+                        <h4 class="mb-3 text-xs font-bold uppercase tracking-wide text-on-surface-muted">Легенда</h4>
                         <div class="space-y-2 text-xs">
                             <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 rounded-full bg-primary"></div>
-                                <span class="text-on-surface-muted">Занято / Резидент</span>
+                                <span class="inline-block h-3 w-3 rounded-full" style="background:#22c55e" />
+                                <span class="text-on-surface-muted">Занято / резидент</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 rounded-full bg-success"></div>
+                                <span class="inline-block h-3 w-3 rounded-full" style="background:#94a3b8" />
                                 <span class="text-on-surface-muted">Свободный павильон</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="inline-block h-3 w-3 rounded-full" style="background:#f59e0b" />
+                                <span class="text-on-surface-muted">Забронировано</span>
                             </div>
                         </div>
                     </div>
