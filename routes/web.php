@@ -54,6 +54,21 @@ Route::get('/', function () {
             'services' => ServiceProfile::count(),
             'companies' => Company::where('status', 'active')->count(),
         ],
+        'featuredVehicles' => Vehicle::where('status', 'active')
+            ->with(['brand', 'carModel', 'photos' => fn ($q) => $q->where('is_main', true)])
+            ->orderByDesc('is_featured')
+            ->latest()
+            ->take(6)
+            ->get(),
+        'featuredParts' => Product::where('status', 'active')
+            ->with(['partsProfile.company', 'category'])
+            ->latest()
+            ->take(8)
+            ->get(),
+        'featuredServices' => ServiceProfile::with('company')
+            ->whereHas('company', fn ($q) => $q->where('status', 'active'))
+            ->take(3)
+            ->get(),
     ]);
 })->name('home');
 

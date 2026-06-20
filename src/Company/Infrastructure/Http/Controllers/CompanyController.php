@@ -16,7 +16,7 @@ class CompanyController extends Controller
         $companies = Company::query()
             ->where('status', CompanyStatus::ACTIVE)
             ->when($request->search, fn ($q, $s) => $q->where('name', 'ilike', "%{$s}%"))
-            ->withCount(['dealerProfile as has_dealer', 'partsProfile as has_parts', 'serviceProfile as has_service'])
+            ->with(['businessProfiles'])
             ->paginate(20);
 
         return Inertia::render('Companies/Index', [
@@ -27,10 +27,39 @@ class CompanyController extends Controller
 
     public function show(Company $company): Response
     {
-        $company->load(['dealerProfile.vehicles' => fn ($q) => $q->active()->take(6), 'partsProfile', 'serviceProfile', 'locations.zone']);
+        $company->load(['businessProfiles']);
+
+        $vehicles = [];
+        $products = [];
+        $services = [];
+
+        if ($company->dealerProfile) {
+            $vehicles = $company->dealerProfile
+                ->vehicles()
+                ->where('status', 'active')
+                ->with(['brand', 'carModel', 'photos' => fn ($q) => $q->where('is_main', true)])
+                ->take(8)
+                ->get();
+        }
+
+        if ($company->partsProfile) {
+            $products = $company->partsProfile
+                ->products()
+                ->where('status', 'active')
+                ->with(['category'])
+                ->take(10)
+                ->get();
+        }
+
+        if ($company->serviceProfile) {
+            $services = [$company->serviceProfile->load(['serviceItems' => fn ($q) => $q->take(5)])];
+        }
 
         return Inertia::render('Companies/Show', [
             'company' => $company,
+            'vehicles' => $vehicles,
+            'products' => $products,
+            'services' => $services,
         ]);
     }
 }

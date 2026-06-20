@@ -36,5 +36,7 @@ class DatabaseSeeder extends Seeder
         }
 
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
+        $this->call(DemoSeeder::class);
     }
 }

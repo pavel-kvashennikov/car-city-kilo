@@ -42,6 +42,18 @@ class Product extends Model
         'price_wholesale' => 'integer',
     ];
 
+    protected $appends = ['cover_photo_url', 'images'];
+
+    public function getImagesAttribute(): array
+    {
+        return data_get($this->getAttribute('attributes'), 'images', []);
+    }
+
+    public function getCoverPhotoUrlAttribute(): ?string
+    {
+        return $this->images[0] ?? null;
+    }
+
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()

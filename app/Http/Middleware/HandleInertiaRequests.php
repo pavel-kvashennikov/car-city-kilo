@@ -22,9 +22,24 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'company' => fn () => $request->user()
-                ?->companies()
-                ->first(),
+            'company' => function () use ($request) {
+                $company = $request->user()
+                    ?->companies()
+                    ->with(['businessProfiles'])
+                    ->first();
+
+                if ($company) {
+                    $company->setAttribute(
+                        'active_profiles',
+                        $company->businessProfiles->map(fn ($p) => [
+                            'type' => $p->type?->value ?? (string) $p->type,
+                            'id' => $p->id,
+                        ])->toArray()
+                    );
+                }
+
+                return $company;
+            },
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),

@@ -102,4 +102,12 @@ class Company extends Model
     {
         return $this->status === CompanyStatus::ACTIVE;
     }
+
+    public function getActiveProfilesAttribute(): array
+    {
+        return $this->businessProfiles->map(fn ($p) => [
+            'type' => $p->type?->value ?? (string) $p->type,
+            'id' => $p->id,
+        ])->toArray();
+    }
 }
