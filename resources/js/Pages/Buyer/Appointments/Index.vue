@@ -10,9 +10,9 @@ defineProps({
 
 <template>
     <AppLayout>
-        <div class="max-w-4xl mx-auto px-4 py-8">
-            <h1 class="text-2xl font-bold mb-6">Мои записи на сервис</h1>
-            <div v-if="appointments.data.length === 0" class="text-center text-gray-500 py-12">
+        <div class="container-app max-w-4xl py-8">
+            <h1 class="page-title mb-6">Мои записи на сервис</h1>
+            <div v-if="appointments.data.length === 0" class="card p-12 text-center text-on-surface-muted">
                 У вас пока нет записей
             </div>
             <div v-else class="space-y-4">

@@ -1,30 +1,55 @@
 <script setup>
-import AppLayout from '@/Components/Layout/AppLayout.vue'
-import { Link } from '@inertiajs/vue3'
+import AppLayout from '@/Components/Layout/AppLayout.vue';
+import { Link } from '@inertiajs/vue3';
+import { ShoppingCart, CalendarCheck, Heart, ArrowRight } from 'lucide-vue-next';
 
 defineProps({
     ordersCount: { type: Number, default: 0 },
     appointmentsCount: { type: Number, default: 0 },
     favoritesCount: { type: Number, default: 0 },
-})
+});
 </script>
 
 <template>
     <AppLayout>
-        <div class="max-w-4xl mx-auto px-4 py-8">
-            <h1 class="text-2xl font-bold mb-6">Личный кабинет</h1>
+        <div class="container-app py-8">
+            <div class="mb-6">
+                <h1 class="page-title">Личный кабинет</h1>
+                <p class="page-subtitle">Ваши заказы, записи и избранное</p>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Link href="/buyer/orders" class="bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
-                    <p class="text-3xl font-bold text-blue-600">{{ ordersCount }}</p>
-                    <p class="text-gray-600 mt-1">Заказы</p>
+                <Link href="/buyer/orders" class="card card-hover p-6 group">
+                    <div class="flex items-center justify-between">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center">
+                            <ShoppingCart class="w-5 h-5 text-white" />
+                        </div>
+                        <ArrowRight class="w-4 h-4 text-on-surface-muted group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                    </div>
+                    <p class="text-3xl font-extrabold text-on-surface mt-4">{{ ordersCount }}</p>
+                    <p class="text-sm text-on-surface-muted">Заказы</p>
                 </Link>
-                <Link href="/buyer/appointments" class="bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
-                    <p class="text-3xl font-bold text-green-600">{{ appointmentsCount }}</p>
-                    <p class="text-gray-600 mt-1">Записи на сервис</p>
+
+                <Link href="/buyer/appointments" class="card card-hover p-6 group">
+                    <div class="flex items-center justify-between">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center">
+                            <CalendarCheck class="w-5 h-5 text-white" />
+                        </div>
+                        <ArrowRight class="w-4 h-4 text-on-surface-muted group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                    </div>
+                    <p class="text-3xl font-extrabold text-on-surface mt-4">{{ appointmentsCount }}</p>
+                    <p class="text-sm text-on-surface-muted">Записи на сервис</p>
                 </Link>
-                <Link href="/buyer/favorites" class="bg-white rounded-xl shadow p-6 hover:shadow-lg transition block">
-                    <p class="text-3xl font-bold text-yellow-600">{{ favoritesCount }}</p>
-                    <p class="text-gray-600 mt-1">Избранное</p>
+
+                <Link href="/buyer/favorites" class="card card-hover p-6 group">
+                    <div class="flex items-center justify-between">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-rose-500 to-rose-700 flex items-center justify-center">
+                            <Heart class="w-5 h-5 text-white" />
+                        </div>
+                        <ArrowRight class="w-4 h-4 text-on-surface-muted group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                    </div>
+                    <p class="text-3xl font-extrabold text-on-surface mt-4">{{ favoritesCount }}</p>
+                    <p class="text-sm text-on-surface-muted">Избранное</p>
                 </Link>
             </div>
         </div>

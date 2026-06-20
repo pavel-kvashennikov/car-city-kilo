@@ -1,9 +1,9 @@
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3';
 
 defineProps({
     links: { type: Array, default: () => [] },
-})
+});
 </script>
 
 <template>
@@ -12,13 +12,15 @@ defineProps({
             <Link
                 v-if="link.url"
                 :href="link.url"
-                class="px-3 py-2 text-sm rounded-lg border transition"
-                :class="link.active ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 text-gray-600 hover:bg-gray-50'"
+                class="min-w-[36px] h-9 flex items-center justify-center px-3 rounded-lg text-sm border transition-colors"
+                :class="link.active
+                    ? 'border-primary bg-primary-light text-primary font-semibold'
+                    : 'border-outline text-on-surface-muted hover:border-primary hover:text-primary'"
                 v-html="link.label"
             />
             <span
                 v-else
-                class="px-3 py-2 text-sm text-gray-400"
+                class="min-w-[36px] h-9 flex items-center justify-center px-3 rounded-lg text-sm border border-transparent text-outline cursor-not-allowed"
                 v-html="link.label"
             />
         </template>

@@ -1,34 +1,46 @@
 <script setup>
-import CabinetLayout from '@/Components/Shared/CabinetLayout.vue'
+import CabinetLayout from '@/Components/Shared/CabinetLayout.vue';
+import { Eye, ClipboardList, ShoppingCart, TrendingUp, BarChart2 } from 'lucide-vue-next';
 
-defineProps({
+const props = defineProps({
     stats: { type: Object, default: () => ({}) },
-})
+});
+
+const cards = [
+    { label: 'Просмотры', key: 'views', icon: Eye, color: 'from-blue-500 to-blue-700' },
+    { label: 'Лиды', key: 'leads', icon: ClipboardList, color: 'from-violet-500 to-violet-700' },
+    { label: 'Заказы', key: 'orders', icon: ShoppingCart, color: 'from-teal-500 to-teal-700' },
+    { label: 'Конверсия', key: 'conversion', icon: TrendingUp, color: 'from-amber-500 to-orange-600' },
+];
 </script>
 
 <template>
     <CabinetLayout>
-        <h1 class="text-2xl font-bold mb-6">Аналитика</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white rounded-xl shadow p-5">
-                <p class="text-sm text-gray-500">Просмотры</p>
-                <p class="text-3xl font-bold mt-1">{{ stats.views ?? 0 }}</p>
+        <div class="space-y-6">
+            <div>
+                <h1 class="page-title">Аналитика</h1>
+                <p class="page-subtitle">Показатели вашей компании</p>
             </div>
-            <div class="bg-white rounded-xl shadow p-5">
-                <p class="text-sm text-gray-500">Лиды</p>
-                <p class="text-3xl font-bold mt-1">{{ stats.leads ?? 0 }}</p>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div v-for="c in cards" :key="c.key" class="card p-5 flex items-center gap-4">
+                    <div :class="['w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center shrink-0', c.color]">
+                        <component :is="c.icon" class="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                        <p class="text-2xl font-extrabold text-on-surface">{{ stats[c.key] ?? (c.key === 'conversion' ? '0%' : 0) }}</p>
+                        <p class="text-xs text-on-surface-muted mt-0.5">{{ c.label }}</p>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white rounded-xl shadow p-5">
-                <p class="text-sm text-gray-500">Заказы</p>
-                <p class="text-3xl font-bold mt-1">{{ stats.orders ?? 0 }}</p>
+
+            <div class="card p-10 flex flex-col items-center justify-center text-center">
+                <div class="w-12 h-12 rounded-xl bg-surface-muted flex items-center justify-center mb-3">
+                    <BarChart2 class="w-6 h-6 text-on-surface-muted" />
+                </div>
+                <p class="font-semibold text-on-surface">Графики скоро появятся</p>
+                <p class="text-sm text-on-surface-muted mt-1 max-w-sm">Детальная аналитика с графиками станет доступна после накопления данных по вашей компании.</p>
             </div>
-            <div class="bg-white rounded-xl shadow p-5">
-                <p class="text-sm text-gray-500">Конверсия</p>
-                <p class="text-3xl font-bold mt-1">{{ stats.conversion ?? '0%' }}</p>
-            </div>
-        </div>
-        <div class="bg-white rounded-xl shadow p-6">
-            <p class="text-gray-500 text-center py-8">Графики аналитики будут доступны после накопления данных</p>
         </div>
     </CabinetLayout>
 </template>

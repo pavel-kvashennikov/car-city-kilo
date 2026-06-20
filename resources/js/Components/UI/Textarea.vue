@@ -3,13 +3,14 @@ defineProps({
     modelValue: { type: [String, Number], default: '' },
     label: { type: String, default: '' },
     error: { type: String, default: '' },
-    type: { type: String, default: 'text' },
     placeholder: { type: String, default: '' },
+    rows: { type: [String, Number], default: 4 },
     required: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
-})
+    hint: { type: String, default: '' },
+});
 
-defineEmits(['update:modelValue'])
+defineEmits(['update:modelValue']);
 </script>
 
 <template>
@@ -18,16 +19,17 @@ defineEmits(['update:modelValue'])
             {{ label }}
             <span v-if="required" class="text-danger">*</span>
         </label>
-        <input
-            :type="type"
+        <textarea
             :value="modelValue"
             :placeholder="placeholder"
+            :rows="rows"
             :required="required"
             :disabled="disabled"
-            class="input-field disabled:bg-surface-muted disabled:cursor-not-allowed"
+            class="input-field resize-y leading-relaxed disabled:bg-surface-muted disabled:cursor-not-allowed"
             :class="{ '!border-danger focus:!shadow-[0_0_0_3px_rgb(220_38_38_/_0.14)]': error }"
             @input="$emit('update:modelValue', $event.target.value)"
         />
         <p v-if="error" class="mt-1.5 text-xs text-danger">{{ error }}</p>
+        <p v-else-if="hint" class="mt-1.5 text-xs text-on-surface-muted">{{ hint }}</p>
     </div>
 </template>

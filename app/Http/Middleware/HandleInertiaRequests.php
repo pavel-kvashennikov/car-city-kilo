@@ -40,6 +40,16 @@ class HandleInertiaRequests extends Middleware
 
                 return $company;
             },
+            'activeProfiles' => function () use ($request) {
+                $company = $request->user()
+                    ?->companies()
+                    ->with(['businessProfiles'])
+                    ->first();
+
+                return $company
+                    ? $company->businessProfiles->map(fn ($p) => $p->type?->value ?? (string) $p->type)->values()->all()
+                    : [];
+            },
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),

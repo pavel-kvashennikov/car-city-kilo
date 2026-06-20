@@ -30,7 +30,7 @@ const fmt = (v) => v ? new Intl.NumberFormat('ru-RU').format(v) + ' ₽' : '—'
                     <p class="page-subtitle">{{ products.total ?? products.data?.length ?? 0 }} товаров в каталоге</p>
                 </div>
                 <div class="flex gap-2">
-                    <Link href="/cabinet/parts/products/import" class="btn-secondary !text-sm">
+                    <Link href="/cabinet/parts/import" class="btn-secondary !text-sm">
                         <Upload class="w-4 h-4" /> Импорт
                     </Link>
                     <Link href="/cabinet/parts/products/create" class="btn-primary !text-sm">

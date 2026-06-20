@@ -15,26 +15,26 @@ const statusMap = {
     cancelled: { label: 'Отменён', variant: 'danger' },
 }
 
-const formatPrice = (v) => new Intl.NumberFormat('ru-RU').format(v / 100) + ' ₽'
+const formatPrice = (v) => new Intl.NumberFormat('ru-RU').format(v) + ' ₽'
 </script>
 
 <template>
     <AppLayout>
-        <div class="max-w-4xl mx-auto px-4 py-8">
-            <h1 class="text-2xl font-bold mb-6">Мои заказы</h1>
-            <div v-if="orders.data.length === 0" class="text-center text-gray-500 py-12">
+        <div class="container-app max-w-4xl py-8">
+            <h1 class="page-title mb-6">Мои заказы</h1>
+            <div v-if="orders.data.length === 0" class="card p-12 text-center text-on-surface-muted">
                 У вас пока нет заказов
             </div>
-            <div v-else class="space-y-4">
-                <div v-for="order in orders.data" :key="order.id" class="bg-white rounded-xl shadow p-4">
+            <div v-else class="space-y-3">
+                <div v-for="order in orders.data" :key="order.id" class="card p-5">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="font-semibold">{{ order.order_number }}</span>
+                        <span class="font-mono font-semibold text-on-surface">{{ order.order_number }}</span>
                         <Badge :variant="(statusMap[order.status] || statusMap.pending).variant">
                             {{ (statusMap[order.status] || statusMap.pending).label }}
                         </Badge>
                     </div>
-                    <p class="text-sm text-gray-500">{{ order.created_at }}</p>
-                    <p class="text-lg font-bold mt-2">{{ formatPrice(order.total_amount) }}</p>
+                    <p class="text-sm text-on-surface-muted">{{ order.created_at }}</p>
+                    <p class="text-lg font-extrabold text-gradient mt-2">{{ formatPrice(order.total_amount) }}</p>
                 </div>
             </div>
             <div class="mt-6">

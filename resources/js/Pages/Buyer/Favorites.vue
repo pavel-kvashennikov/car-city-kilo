@@ -24,10 +24,10 @@ const itemUrl = (item) => {
 
 <template>
     <AppLayout>
-        <div class="max-w-4xl mx-auto px-4 py-8">
-            <h1 class="text-2xl font-bold mb-6">Избранное</h1>
+        <div class="container-app max-w-4xl py-8">
+            <h1 class="page-title mb-6">Избранное</h1>
 
-            <div v-if="!favorites.data?.length" class="text-center text-gray-500 py-12">
+            <div v-if="!favorites.data?.length" class="card p-12 text-center text-on-surface-muted">
                 В избранном пока ничего нет
             </div>
 
@@ -36,10 +36,10 @@ const itemUrl = (item) => {
                     v-for="item in favorites.data"
                     :key="item.id"
                     :href="itemUrl(item)"
-                    class="block bg-white rounded-xl shadow p-4 hover:shadow-md transition"
+                    class="card card-hover p-5 block"
                 >
-                    <p class="font-medium">{{ itemTitle(item) }}</p>
-                    <p class="text-sm text-gray-500 mt-1">Добавлено {{ new Date(item.created_at).toLocaleDateString('ru-RU') }}</p>
+                    <p class="font-semibold text-on-surface">{{ itemTitle(item) }}</p>
+                    <p class="text-sm text-on-surface-muted mt-1">Добавлено {{ new Date(item.created_at).toLocaleDateString('ru-RU') }}</p>
                 </Link>
             </div>
 

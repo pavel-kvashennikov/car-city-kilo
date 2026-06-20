@@ -1,12 +1,15 @@
 <script setup>
-import CabinetLayout from '@/Components/Shared/CabinetLayout.vue'
-import { useForm } from '@inertiajs/vue3'
-import Input from '@/Components/UI/Input.vue'
-import Button from '@/Components/UI/Button.vue'
+import CabinetLayout from '@/Components/Shared/CabinetLayout.vue';
+import Input from '@/Components/UI/Input.vue';
+import Select from '@/Components/UI/Select.vue';
+import Textarea from '@/Components/UI/Textarea.vue';
+import Button from '@/Components/UI/Button.vue';
+import { useForm, Link } from '@inertiajs/vue3';
+import { ChevronLeft } from 'lucide-vue-next';
 
 defineProps({
     categories: { type: Array, default: () => [] },
-})
+});
 
 const form = useForm({
     name: '',
@@ -20,42 +23,61 @@ const form = useForm({
     condition: 'new',
     part_type: 'aftermarket',
     description: '',
-})
+});
 
-const submit = () => {
-    form.post('/cabinet/parts/products')
-}
+const conditions = [
+    { value: 'new', label: 'Новая' },
+    { value: 'used', label: 'Б/У' },
+];
+const partTypes = [
+    { value: 'original', label: 'Оригинал' },
+    { value: 'aftermarket', label: 'Аналог' },
+];
+
+const submit = () => form.post('/cabinet/parts/products');
 </script>
 
 <template>
     <CabinetLayout>
-        <h1 class="text-2xl font-bold mb-6">Добавить товар</h1>
-        <form class="max-w-2xl bg-white rounded-xl shadow p-6 space-y-4" @submit.prevent="submit">
-            <Input v-model="form.name" label="Название *" :error="form.errors.name" required />
-            <div class="grid grid-cols-2 gap-4">
-                <Input v-model="form.article_number" label="Артикул" :error="form.errors.article_number" />
-                <Input v-model="form.oem_number" label="OEM номер" :error="form.errors.oem_number" />
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-                <Input v-model="form.brand" label="Бренд" :error="form.errors.brand" />
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Категория</label>
-                    <select v-model="form.category_id" class="w-full rounded-lg border-gray-300">
-                        <option value="">—</option>
-                        <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
-                    </select>
-                </div>
-            </div>
-            <div class="grid grid-cols-3 gap-4">
-                <Input v-model="form.price_retail" label="Цена (розн.)" type="number" />
-                <Input v-model="form.price_wholesale" label="Цена (опт.)" type="number" />
-                <Input v-model="form.stock_quantity" label="Кол-во" type="number" />
-            </div>
+        <div class="space-y-5 max-w-3xl">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Описание</label>
-                <textarea v-model="form.description" rows="3" class="w-full rounded-lg border-gray-300" />
+                <Link href="/cabinet/parts/products" class="inline-flex items-center gap-1 text-sm text-on-surface-muted hover:text-primary mb-2">
+                    <ChevronLeft class="w-3.5 h-3.5" /> К списку товаров
+                </Link>
+                <h1 class="page-title">Добавить товар</h1>
             </div>
-            <Button type="submit" :loading="form.processing">Создать</Button>
-        </form>
+
+            <form class="card p-6 space-y-5" @submit.prevent="submit">
+                <Input v-model="form.name" label="Название" :error="form.errors.name" required />
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Input v-model="form.article_number" label="Артикул" :error="form.errors.article_number" />
+                    <Input v-model="form.oem_number" label="OEM-номер" :error="form.errors.oem_number" />
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Input v-model="form.brand" label="Бренд" :error="form.errors.brand" />
+                    <Select v-model="form.category_id" label="Категория" placeholder="— Выберите —" :options="categories" option-value="id" option-label="name" />
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <Input v-model="form.price_retail" label="Цена розн., ₽" type="number" :error="form.errors.price_retail" />
+                    <Input v-model="form.price_wholesale" label="Цена опт., ₽" type="number" />
+                    <Input v-model="form.stock_quantity" label="Остаток, шт." type="number" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <Select v-model="form.condition" label="Состояние" :options="conditions" />
+                    <Select v-model="form.part_type" label="Тип" :options="partTypes" />
+                </div>
+
+                <Textarea v-model="form.description" label="Описание" :rows="3" />
+
+                <div class="flex items-center gap-3 pt-2 border-t border-outline">
+                    <Button type="submit" :loading="form.processing">Создать товар</Button>
+                    <Link href="/cabinet/parts/products" class="btn-secondary !text-sm">Отмена</Link>
+                </div>
+            </form>
+        </div>
     </CabinetLayout>
 </template>

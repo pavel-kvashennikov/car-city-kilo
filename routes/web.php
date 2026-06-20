@@ -143,6 +143,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('cabinet')->name('cabinet.')->middleware(['auth'])->group(function () {
         Route::get('/', [App\Http\Controllers\Cabinet\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/billing', [CabinetBillingController::class, 'index'])->name('billing');
+        Route::post('/billing/subscribe', [CabinetBillingController::class, 'subscribe'])->name('billing.subscribe');
         Route::get('/analytics', [CabinetAnalyticsController::class, 'index'])->name('analytics');
 
         // Company Management
@@ -162,6 +163,7 @@ Route::middleware('auth')->group(function () {
         // Parts Profile
         Route::prefix('parts')->name('parts.')->group(function () {
             Route::resource('products', ProductController::class);
+            Route::get('/import', [ProductImportController::class, 'create'])->name('import.create');
             Route::post('/import', [ProductImportController::class, 'store'])->name('import');
             Route::get('/orders', [PartsOrderController::class, 'index'])->name('orders.index');
             Route::put('/orders/{order}', [PartsOrderController::class, 'update'])->name('orders.update');
@@ -190,6 +192,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/companies/{company}/reject', [CompanyManageController::class, 'reject'])->name('companies.reject');
         Route::put('/companies/{company}/suspend', [CompanyManageController::class, 'suspend'])->name('companies.suspend');
         Route::get('/moderation', [ModerationController::class, 'index'])->name('moderation.index');
+        Route::put('/moderation/vehicles/{vehicle}/approve', [ModerationController::class, 'approveVehicle'])->name('moderation.vehicles.approve');
+        Route::put('/moderation/vehicles/{vehicle}/reject', [ModerationController::class, 'rejectVehicle'])->name('moderation.vehicles.reject');
         Route::get('/billing', [AdminBillingController::class, 'index'])->name('billing.index');
         Route::get('/billing/plans', [PlanController::class, 'index'])->name('plans.index');
         Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');

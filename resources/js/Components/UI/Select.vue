@@ -1,15 +1,17 @@
 <script setup>
 defineProps({
-    modelValue: { type: [String, Number], default: '' },
+    modelValue: { type: [String, Number, null], default: '' },
     label: { type: String, default: '' },
     error: { type: String, default: '' },
-    type: { type: String, default: 'text' },
     placeholder: { type: String, default: '' },
     required: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
-})
+    options: { type: Array, default: () => [] },
+    optionValue: { type: String, default: 'value' },
+    optionLabel: { type: String, default: 'label' },
+});
 
-defineEmits(['update:modelValue'])
+defineEmits(['update:modelValue']);
 </script>
 
 <template>
@@ -18,16 +20,25 @@ defineEmits(['update:modelValue'])
             {{ label }}
             <span v-if="required" class="text-danger">*</span>
         </label>
-        <input
-            :type="type"
+        <select
             :value="modelValue"
-            :placeholder="placeholder"
             :required="required"
             :disabled="disabled"
             class="input-field disabled:bg-surface-muted disabled:cursor-not-allowed"
             :class="{ '!border-danger focus:!shadow-[0_0_0_3px_rgb(220_38_38_/_0.14)]': error }"
-            @input="$emit('update:modelValue', $event.target.value)"
-        />
+            @change="$emit('update:modelValue', $event.target.value)"
+        >
+            <option v-if="placeholder" value="">{{ placeholder }}</option>
+            <slot>
+                <option
+                    v-for="opt in options"
+                    :key="typeof opt === 'object' ? opt[optionValue] : opt"
+                    :value="typeof opt === 'object' ? opt[optionValue] : opt"
+                >
+                    {{ typeof opt === 'object' ? opt[optionLabel] : opt }}
+                </option>
+            </slot>
+        </select>
         <p v-if="error" class="mt-1.5 text-xs text-danger">{{ error }}</p>
     </div>
 </template>

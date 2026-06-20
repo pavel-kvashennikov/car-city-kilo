@@ -11,9 +11,13 @@ const page = usePage();
 const user = computed(() => page.props.auth?.user);
 const company = computed(() => page.props.company);
 const currentUrl = computed(() => page.url);
-const profiles = computed(() => page.props.company?.active_profiles ?? []);
+const profiles = computed(() => {
+    const shared = page.props.activeProfiles;
+    if (Array.isArray(shared)) return shared;
+    return (page.props.company?.active_profiles ?? []).map(p => (typeof p === 'object' ? p.type : p));
+});
 
-const hasProfile = (type) => profiles.value.some(p => p.type === type) || profiles.value.length === 0;
+const hasProfile = (type) => profiles.value.length === 0 || profiles.value.includes(type);
 
 const navigation = computed(() => [
     { name: 'Дашборд', href: '/cabinet', icon: LayoutDashboard, always: true },

@@ -13,7 +13,8 @@ class BillingController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/Billing/Index', [
-            'plans' => Plan::orderBy('sort_order')->get(),
+            'plans' => Plan::withCount(['subscriptions as companies_count' => fn ($q) => $q->where('status', 'active')])
+                ->orderBy('sort_order')->get(),
             'recentPayments' => Payment::with('company')->latest()->take(20)->get(),
         ]);
     }

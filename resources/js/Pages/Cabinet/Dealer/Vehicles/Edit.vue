@@ -1,13 +1,16 @@
 <script setup>
-import CabinetLayout from '@/Components/Shared/CabinetLayout.vue'
-import { useForm } from '@inertiajs/vue3'
-import Input from '@/Components/UI/Input.vue'
-import Button from '@/Components/UI/Button.vue'
+import CabinetLayout from '@/Components/Shared/CabinetLayout.vue';
+import Input from '@/Components/UI/Input.vue';
+import Select from '@/Components/UI/Select.vue';
+import Textarea from '@/Components/UI/Textarea.vue';
+import Button from '@/Components/UI/Button.vue';
+import { useForm, Link, router } from '@inertiajs/vue3';
+import { ChevronLeft, ExternalLink, Trash2 } from 'lucide-vue-next';
 
 const props = defineProps({
     vehicle: { type: Object, required: true },
     brands: { type: Array, default: () => [] },
-})
+});
 
 const form = useForm({
     brand_id: props.vehicle.brand_id,
@@ -21,46 +24,78 @@ const form = useForm({
     condition: props.vehicle.condition ?? 'used',
     description: props.vehicle.description ?? '',
     status: props.vehicle.status ?? 'draft',
-})
+});
 
-const submit = () => {
-    form.put(`/cabinet/dealer/vehicles/${props.vehicle.id}`)
-}
+const transmissions = [
+    { value: 'manual', label: 'Механика' },
+    { value: 'automatic', label: 'Автомат' },
+    { value: 'robot', label: 'Робот' },
+    { value: 'cvt', label: 'Вариатор' },
+];
+const conditions = [
+    { value: 'new', label: 'Новый' },
+    { value: 'used', label: 'С пробегом' },
+];
+const statuses = [
+    { value: 'draft', label: 'Черновик' },
+    { value: 'pending', label: 'На модерации' },
+    { value: 'active', label: 'Активно' },
+    { value: 'sold', label: 'Продано' },
+    { value: 'archived', label: 'Архив' },
+];
+
+const submit = () => form.put(`/cabinet/dealer/vehicles/${props.vehicle.id}`);
+
+const destroy = () => {
+    if (confirm('Удалить это объявление?')) {
+        router.delete(`/cabinet/dealer/vehicles/${props.vehicle.id}`);
+    }
+};
 </script>
 
 <template>
     <CabinetLayout>
-        <h1 class="text-2xl font-bold mb-6">Редактирование автомобиля</h1>
-        <form class="max-w-2xl bg-white rounded-xl shadow p-6 space-y-4" @submit.prevent="submit">
-            <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-5 max-w-3xl">
+            <div class="flex items-start justify-between gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Марка</label>
-                    <select v-model="form.brand_id" class="w-full rounded-lg border-gray-300">
-                        <option v-for="b in brands" :key="b.id" :value="b.id">{{ b.name }}</option>
-                    </select>
+                    <Link href="/cabinet/dealer/vehicles" class="inline-flex items-center gap-1 text-sm text-on-surface-muted hover:text-primary mb-2">
+                        <ChevronLeft class="w-3.5 h-3.5" /> К списку автомобилей
+                    </Link>
+                    <h1 class="page-title">{{ vehicle.brand?.name }} {{ vehicle.car_model?.name }}</h1>
                 </div>
-                <Input v-model="form.year" label="Год" type="number" />
+                <Link v-if="vehicle.slug" :href="`/catalog/cars/${vehicle.slug}`" target="_blank" class="btn-secondary !text-xs !py-1.5 shrink-0">
+                    <ExternalLink class="w-3.5 h-3.5" /> На сайте
+                </Link>
             </div>
-            <div class="grid grid-cols-2 gap-4">
-                <Input v-model="form.mileage" label="Пробег" type="number" />
-                <Input v-model="form.price" label="Цена" type="number" />
-            </div>
-            <Input v-model="form.vin" label="VIN" />
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Статус</label>
-                <select v-model="form.status" class="w-full rounded-lg border-gray-300">
-                    <option value="draft">Черновик</option>
-                    <option value="pending">На модерации</option>
-                    <option value="active">Активно</option>
-                    <option value="sold">Продано</option>
-                    <option value="archived">Архив</option>
-                </select>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Описание</label>
-                <textarea v-model="form.description" rows="4" class="w-full rounded-lg border-gray-300" />
-            </div>
-            <Button type="submit" :loading="form.processing">Сохранить</Button>
-        </form>
+
+            <form class="card p-6 space-y-5" @submit.prevent="submit">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Select v-model="form.brand_id" label="Марка" :options="brands" option-value="id" option-label="name" />
+                    <Input v-model="form.year" label="Год" type="number" />
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <Input v-model="form.mileage" label="Пробег, км" type="number" />
+                    <Input v-model="form.price" label="Цена, ₽" type="number" />
+                    <Input v-model="form.color" label="Цвет" />
+                </div>
+                <Input v-model="form.vin" label="VIN" />
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <Select v-model="form.transmission" label="КПП" placeholder="—" :options="transmissions" />
+                    <Select v-model="form.condition" label="Состояние" :options="conditions" />
+                    <Select v-model="form.status" label="Статус" :options="statuses" />
+                </div>
+                <Textarea v-model="form.description" label="Описание" :rows="4" />
+
+                <div class="flex items-center justify-between pt-2 border-t border-outline">
+                    <div class="flex items-center gap-3">
+                        <Button type="submit" :loading="form.processing">Сохранить</Button>
+                        <Link href="/cabinet/dealer/vehicles" class="btn-secondary !text-sm">Отмена</Link>
+                    </div>
+                    <button type="button" @click="destroy" class="inline-flex items-center gap-1.5 text-sm text-danger hover:underline">
+                        <Trash2 class="w-4 h-4" /> Удалить
+                    </button>
+                </div>
+            </form>
+        </div>
     </CabinetLayout>
 </template>

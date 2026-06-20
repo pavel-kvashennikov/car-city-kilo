@@ -4,9 +4,16 @@ namespace Src\Parts\Infrastructure\Http\Controllers\Cabinet;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProductImportController extends Controller
 {
+    public function create(): Response
+    {
+        return Inertia::render('Cabinet/Parts/Import');
+    }
+
     public function store(Request $request)
     {
         $request->validate([

@@ -1,12 +1,20 @@
 <script setup>
 import CabinetLayout from '@/Components/Shared/CabinetLayout.vue';
-import { Link } from '@inertiajs/vue3';
-import { Eye, ClipboardList, ShoppingCart, Car, Package, Wrench, ArrowRight, TrendingUp } from 'lucide-vue-next';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { Eye, ClipboardList, ShoppingCart, Car, Package, Wrench, ArrowRight, TrendingUp, Building2 } from 'lucide-vue-next';
 
 const props = defineProps({
     stats: { type: Object, default: () => ({}) },
     company: { type: Object, default: () => null },
 });
+
+const page = usePage();
+const profiles = computed(() => {
+    const shared = page.props.activeProfiles;
+    return Array.isArray(shared) ? shared : [];
+});
+const has = (t) => profiles.value.length === 0 || profiles.value.includes(t);
 
 const statCards = [
     { label: 'Просмотры сегодня', key: 'views_today', icon: Eye, color: 'from-blue-500 to-blue-700' },
@@ -15,12 +23,13 @@ const statCards = [
     { label: 'Рост показов', key: 'impressions_growth', icon: TrendingUp, color: 'from-amber-500 to-orange-600', suffix: '%' },
 ];
 
-const quickLinks = [
-    { label: 'Добавить автомобиль', href: '/cabinet/dealer/vehicles/create', icon: Car },
-    { label: 'Добавить запчасть', href: '/cabinet/parts/products/create', icon: Package },
-    { label: 'Мастера сервиса', href: '/cabinet/service/masters', icon: Wrench },
-    { label: 'Аналитика', href: '/cabinet/analytics', icon: TrendingUp },
-];
+const quickLinks = computed(() => [
+    { label: 'Добавить автомобиль', href: '/cabinet/dealer/vehicles/create', icon: Car, show: has('dealer') },
+    { label: 'Добавить запчасть', href: '/cabinet/parts/products/create', icon: Package, show: has('parts') },
+    { label: 'Мастера сервиса', href: '/cabinet/service/masters', icon: Wrench, show: has('service') },
+    { label: 'Профиль компании', href: '/cabinet/company', icon: Building2, show: true },
+    { label: 'Аналитика', href: '/cabinet/analytics', icon: TrendingUp, show: true },
+].filter(l => l.show));
 </script>
 
 <template>
