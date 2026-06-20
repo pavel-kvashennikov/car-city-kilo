@@ -169,8 +169,8 @@ function setMainPhoto(photo) {
     );
 }
 
-function photoUrl(path) {
-    return mediaUrl(path);
+function photoUrl(photo) {
+    return mediaUrl(photo?.url ?? photo?.path);
 }
 
 const statusBadge = computed(() => {
@@ -227,7 +227,7 @@ const statusBadge = computed(() => {
                 <div v-if="vehicle.photos?.length" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     <div v-for="photo in vehicle.photos" :key="photo.id"
                         class="relative group rounded-xl overflow-hidden aspect-[4/3] bg-surface-muted">
-                        <img v-if="photoUrl(photo.path)" :src="photoUrl(photo.path)"
+                        <img v-if="photoUrl(photo)" :src="photoUrl(photo)"
                             class="w-full h-full object-cover" :alt="'Фото авто'" />
                         <div v-else class="w-full h-full flex items-center justify-center">
                             <ImageOff class="w-8 h-8 text-outline" />

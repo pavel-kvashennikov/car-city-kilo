@@ -12,7 +12,7 @@ defineProps({
 const fmt = (v) => new Intl.NumberFormat('ru-RU').format(v) + ' ₽';
 const statusVariant = (s) => ({ active: 'success', draft: 'default', pending: 'warning', sold: 'info', archived: 'default' }[s] || 'default');
 const statusLabel = (s) => ({ active: 'Активно', draft: 'Черновик', pending: 'На модерации', sold: 'Продано', archived: 'Архив' }[s] || s);
-const photoSrc = (p) => mediaUrl(p?.path) ?? p?.url ?? null;
+const photoSrc = (p) => mediaUrl(p?.url ?? p?.path) ?? p?.url ?? null;
 </script>
 
 <template>

@@ -2,6 +2,7 @@
 
 namespace Src\Parts\Domain\Models;
 
+use App\Support\MediaUrl;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -46,7 +47,12 @@ class Product extends Model
 
     public function getImagesAttribute(): array
     {
-        return data_get($this->getAttribute('attributes'), 'images', []);
+        $images = data_get($this->getAttribute('attributes'), 'images', []);
+
+        return array_values(array_filter(array_map(
+            fn ($path) => MediaUrl::resolve($path),
+            $images
+        )));
     }
 
     public function getCoverPhotoUrlAttribute(): ?string

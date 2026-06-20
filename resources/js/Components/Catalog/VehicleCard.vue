@@ -10,7 +10,7 @@ const props = defineProps({ vehicle: { type: Object, required: true } });
 const fmt = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
 const km = (n) => n > 0 ? new Intl.NumberFormat('ru-RU').format(n) + ' км' : 'Новый';
 const txLabel = { automatic: 'Автомат', manual: 'Механика', robot: 'Робот', cvt: 'Вариатор' };
-const photoSrc = (p) => mediaUrl(p?.path);
+const photoSrc = (p) => mediaUrl(p?.url ?? p?.path);
 
 const { isVehicleFavorited, toggle } = useFavorites();
 const isFav = computed(() => isVehicleFavorited(props.vehicle.id));

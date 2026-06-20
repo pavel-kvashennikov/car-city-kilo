@@ -6,6 +6,8 @@ import {
     Star, ChevronRight, Package, CheckCircle2, TrendingUp
 } from 'lucide-vue-next';
 
+import { mediaUrl } from '@/lib/mediaUrl';
+
 const props = defineProps({
     stats: { type: Object, default: () => ({ vehicles: 0, parts: 0, services: 0, companies: 0 }) },
     featuredVehicles: { type: Array, default: () => [] },
@@ -15,6 +17,7 @@ const props = defineProps({
 
 const fmt = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
 const km = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' км';
+const vehiclePhotoSrc = (vehicle) => mediaUrl(vehicle.photos?.[0]?.url ?? vehicle.photos?.[0]?.path);
 
 const categories = [
     {
@@ -178,8 +181,8 @@ const highlights = [
                         <!-- Photo -->
                         <div class="relative aspect-[16/10] bg-surface-muted overflow-hidden">
                             <img
-                                v-if="vehicle.photos?.[0]?.path"
-                                :src="vehicle.photos[0].path"
+                                v-if="vehiclePhotoSrc(vehicle)"
+                                :src="vehiclePhotoSrc(vehicle)"
                                 :alt="`${vehicle.brand?.name} ${vehicle.car_model?.name}`"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             />

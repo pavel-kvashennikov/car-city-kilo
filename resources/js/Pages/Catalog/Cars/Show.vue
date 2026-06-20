@@ -19,7 +19,7 @@ const activePhoto = ref(0);
 const fmt = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
 const km = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' км';
 
-const photoSrc = (photo) => mediaUrl(photo?.path);
+const photoSrc = (photo) => mediaUrl(photo?.url ?? photo?.path);
 
 const transmissionLabel = {
     automatic: 'Автомат', manual: 'Механика', robot: 'Робот', cvt: 'Вариатор',

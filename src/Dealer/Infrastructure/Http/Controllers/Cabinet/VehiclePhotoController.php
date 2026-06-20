@@ -49,9 +49,9 @@ class VehiclePhotoController extends Controller
     {
         $this->authorizeVehicle($request, $vehicle);
 
-        Storage::disk('public')->delete($photo->path);
+        $this->deleteStoredFile($photo->path);
         if ($photo->thumb_path && $photo->thumb_path !== $photo->path) {
-            Storage::disk('public')->delete($photo->thumb_path);
+            $this->deleteStoredFile($photo->thumb_path);
         }
 
         $wasMain = $photo->is_main;
@@ -63,6 +63,15 @@ class VehiclePhotoController extends Controller
         }
 
         return back()->with('success', 'Фото удалено.');
+    }
+
+    private function deleteStoredFile(?string $path): void
+    {
+        if (! $path || str_starts_with($path, '/') || str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return;
+        }
+
+        Storage::disk('public')->delete($path);
     }
 
     private function authorizeVehicle(Request $request, Vehicle $vehicle): void

@@ -22,7 +22,7 @@ const columns = [
 const fmt = (v) => new Intl.NumberFormat('ru-RU').format(v) + ' ₽';
 const statusVariant = (s) => ({ active: 'success', draft: 'default', sold: 'info' }[s] || 'default');
 const statusLabel = (s) => ({ active: 'Активен', draft: 'Черновик', sold: 'Продан', inactive: 'Неактивен' }[s] || s);
-const photoSrc = (v) => mediaUrl(v.photos?.[0]?.path);
+const photoSrc = (v) => mediaUrl(v.photos?.[0]?.url ?? v.photos?.[0]?.path);
 </script>
 
 <template>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Src\Dealer\Infrastructure\Search;
 
+use App\Support\MediaUrl;
 use Meilisearch\Client;
 use Src\Dealer\Domain\Models\Vehicle;
 
@@ -64,7 +65,7 @@ class VehicleSearchIndexer
             'car_brand_id' => $vehicle->brand_id,
             'car_model_id' => $vehicle->model_id,
             'legal_status' => $vehicle->legal_status,
-            'cover_photo_url' => $vehicle->photos->first()?->path,
+            'cover_photo_url' => MediaUrl::resolve($vehicle->photos->first()?->path),
             'views_count' => $vehicle->views_count ?? 0,
             'published_at' => $vehicle->published_at?->toIso8601String(),
         ];

@@ -11,7 +11,7 @@ const activeIndex = ref(0)
 const setActive = (index) => { activeIndex.value = index }
 const next = () => { activeIndex.value = (activeIndex.value + 1) % props.photos.length }
 const prev = () => { activeIndex.value = (activeIndex.value - 1 + props.photos.length) % props.photos.length }
-const photoSrc = (photo) => mediaUrl(photo?.path)
+const photoSrc = (photo) => mediaUrl(photo?.url ?? photo?.path)
 </script>
 
 <template>

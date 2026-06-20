@@ -71,7 +71,7 @@ function vehicleTitle(v) {
 }
 
 function vehiclePhoto(v) {
-    return mediaUrl(v?.photos?.[0]?.path);
+    return mediaUrl(v?.photos?.[0]?.url ?? v?.photos?.[0]?.path);
 }
 
 function fmt(n) {
