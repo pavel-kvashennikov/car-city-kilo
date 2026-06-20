@@ -43,9 +43,32 @@ class DemoSeeder extends Seeder
     /** @var array<int,int> */
     private array $partCategoryIds = [];
 
-    private function img(string $id, int $w = 900): string
+    /** @var array<string, array<int, string>>|null */
+    private ?array $demoImages = null;
+
+    private function demoImages(string $folder): array
     {
-        return "https://images.unsplash.com/{$id}?auto=format&fit=crop&w={$w}&q=80";
+        if ($this->demoImages === null) {
+            $this->demoImages = [];
+            foreach (['cars', 'interior', 'parts'] as $dir) {
+                $path = public_path('images/demo/'.$dir);
+                $files = [];
+                if (is_dir($path)) {
+                    foreach (scandir($path) as $file) {
+                        if ($file === '.' || $file === '..') {
+                            continue;
+                        }
+                        if (preg_match('/\.(jpe?g|png|webp|gif)$/i', $file)) {
+                            $files[] = '/images/demo/'.$dir.'/'.$file;
+                        }
+                    }
+                }
+                sort($files);
+                $this->demoImages[$dir] = $files;
+            }
+        }
+
+        return $this->demoImages[$folder] ?? [];
     }
 
     public function run(): void
@@ -292,18 +315,12 @@ class DemoSeeder extends Seeder
             return;
         }
 
-        $carImages = [
-            'photo-1503376780353-7e6692767b70', 'photo-1552519507-da3b142c6e3d',
-            'photo-1494976388531-d1058494cdd8', 'photo-1583121274602-3e2820c69888',
-            'photo-1605559424843-9e4c228bf1c2', 'photo-1606664515524-ed2f786a0bd6',
-            'photo-1511919884226-fd3cad34687c', 'photo-1542362567-b07e54358753',
-            'photo-1568605117036-5fe5e7bab0b7', 'photo-1502877338535-766e1452684a',
-            'photo-1580273916550-e323be2ae537', 'photo-1617469767053-d3b523a0b982',
-        ];
-        $interiorImages = [
-            'photo-1503736334956-4c8f8e92946d', 'photo-1449965408869-eaa3f722e40d',
-            'photo-1492144534655-ae79c964c9d7',
-        ];
+        $carImages = $this->demoImages('cars');
+        $interiorImages = $this->demoImages('interior');
+
+        if (empty($carImages)) {
+            return;
+        }
 
         $colors = ['Чёрный', 'Белый', 'Серебристый', 'Серый', 'Синий', 'Красный'];
         $bodies = ['Седан', 'Внедорожник', 'Хэтчбек', 'Кроссовер', 'Универсал'];
@@ -353,14 +370,14 @@ class DemoSeeder extends Seeder
 
             $photoCount = rand(4, 6);
             for ($p = 0; $p < $photoCount; $p++) {
-                $useInterior = $p >= 3;
-                $id = $useInterior
+                $useInterior = $p >= 3 && ! empty($interiorImages);
+                $src = $useInterior
                     ? $interiorImages[($i + $p) % count($interiorImages)]
                     : $carImages[($i * 2 + $p) % count($carImages)];
                 VehiclePhoto::create([
                     'vehicle_id' => $vehicle->id,
-                    'path' => $this->img($id, 1000),
-                    'thumb_path' => $this->img($id, 400),
+                    'path' => $src,
+                    'thumb_path' => $src,
                     'sort_order' => $p,
                     'is_main' => $p === 0,
                 ]);
@@ -409,11 +426,11 @@ class DemoSeeder extends Seeder
             return;
         }
 
-        $partsImages = [
-            'photo-1486262715619-67b85e0b08d3', 'photo-1530046339160-ce3e530c7d2f',
-            'photo-1487754180451-c456f719a1fc', 'photo-1599256871679-6c95d63bc8e6',
-            'photo-1632823471565-1ecdf5c6da77', 'photo-1605618313023-d6c47e0a7edf',
-        ];
+        $partsImages = $this->demoImages('parts');
+
+        if (empty($partsImages)) {
+            return;
+        }
 
         $catalog = [
             ['Тормозные колодки передние', 'BOSCH', 'brakes'],
@@ -456,7 +473,7 @@ class DemoSeeder extends Seeder
                 'wholesale_min_qty' => 5,
                 'description' => 'Качественная деталь от проверенного производителя. Гарантия соответствия оригинальным характеристикам. Подбор по VIN — бесплатно.',
                 'attributes' => [
-                    'images' => [$this->img($img, 800), $this->img($partsImages[($i + 2) % count($partsImages)], 800)],
+                    'images' => [$img, $partsImages[($i + 2) % count($partsImages)]],
                     'warranty' => '12 мес.',
                     'country' => ['Германия', 'Япония', 'Корея'][array_rand(['Германия', 'Япония', 'Корея'])],
                 ],

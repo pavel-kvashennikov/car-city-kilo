@@ -9,6 +9,7 @@ import { computed, ref, watch } from 'vue';
 import {
     ChevronLeft, ExternalLink, Trash2, Upload, X, Star, ImageOff, CheckSquare
 } from 'lucide-vue-next';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 const props = defineProps({
     vehicle: { type: Object, required: true },
@@ -169,7 +170,7 @@ function setMainPhoto(photo) {
 }
 
 function photoUrl(path) {
-    return path ? `/storage/${path}` : null;
+    return mediaUrl(path);
 }
 
 const statusBadge = computed(() => {

@@ -3,14 +3,12 @@ import { Link } from '@inertiajs/vue3';
 import { Settings, Heart } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { useFavorites } from '@/composables/useFavorites';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 const props = defineProps({ product: { type: Object, required: true } });
 
 const fmt = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
-const imgSrc = (url) => {
-    if (!url) return null;
-    return url.startsWith('http') ? url : `/storage/${url}`;
-};
+const imgSrc = mediaUrl;
 
 const { isProductFavorited, toggle } = useFavorites();
 const isFav = computed(() => isProductFavorited(props.product.id));

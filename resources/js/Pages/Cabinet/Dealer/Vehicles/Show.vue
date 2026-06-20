@@ -3,6 +3,7 @@ import CabinetLayout from '@/Components/Shared/CabinetLayout.vue';
 import Badge from '@/Components/UI/Badge.vue';
 import { Link } from '@inertiajs/vue3';
 import { ChevronLeft, Pencil, Car, Phone } from 'lucide-vue-next';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 defineProps({
     vehicle: { type: Object, required: true },
@@ -11,7 +12,7 @@ defineProps({
 const fmt = (v) => new Intl.NumberFormat('ru-RU').format(v) + ' ₽';
 const statusVariant = (s) => ({ active: 'success', draft: 'default', pending: 'warning', sold: 'info', archived: 'default' }[s] || 'default');
 const statusLabel = (s) => ({ active: 'Активно', draft: 'Черновик', pending: 'На модерации', sold: 'Продано', archived: 'Архив' }[s] || s);
-const photoSrc = (p) => p?.path?.startsWith('http') ? p.path : p?.path ? `/storage/${p.path}` : (p?.url ?? null);
+const photoSrc = (p) => mediaUrl(p?.path) ?? p?.url ?? null;
 </script>
 
 <template>

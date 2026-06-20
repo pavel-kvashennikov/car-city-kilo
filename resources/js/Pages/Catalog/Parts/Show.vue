@@ -3,6 +3,7 @@ import AppLayout from '@/Components/Layout/AppLayout.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { ChevronLeft, ShoppingCart, Package } from 'lucide-vue-next';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 const props = defineProps({ product: Object });
 const qty = ref(1);
@@ -11,10 +12,7 @@ const activeImg = ref(0);
 
 const fmt = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
 
-const imgSrc = (url) => {
-    if (!url) return null;
-    return url.startsWith('http') ? url : `/storage/${url}`;
-};
+const imgSrc = mediaUrl;
 
 const images = props.product?.attributes?.images ?? [];
 

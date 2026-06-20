@@ -8,6 +8,7 @@ import {
     ArrowLeftRight, PhoneCall, CheckCircle, Clock, XCircle, AlertCircle,
     ChevronDown, Inbox
 } from 'lucide-vue-next';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 const props = defineProps({
     leads:   { type: Object, default: () => ({ data: [], links: [] }) },
@@ -70,8 +71,7 @@ function vehicleTitle(v) {
 }
 
 function vehiclePhoto(v) {
-    if (!v?.photos?.length) return null;
-    return `/storage/${v.photos[0].path}`;
+    return mediaUrl(v?.photos?.[0]?.path);
 }
 
 function fmt(n) {

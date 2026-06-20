@@ -4,6 +4,7 @@ import DataTable from '@/Components/UI/DataTable.vue';
 import Badge from '@/Components/UI/Badge.vue';
 import { Link } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 defineProps({
     vehicles: { type: Object, default: () => ({ data: [], links: [] }) },
@@ -21,11 +22,7 @@ const columns = [
 const fmt = (v) => new Intl.NumberFormat('ru-RU').format(v) + ' ₽';
 const statusVariant = (s) => ({ active: 'success', draft: 'default', sold: 'info' }[s] || 'default');
 const statusLabel = (s) => ({ active: 'Активен', draft: 'Черновик', sold: 'Продан', inactive: 'Неактивен' }[s] || s);
-const photoSrc = (v) => {
-    const path = v.photos?.[0]?.path;
-    if (!path) return null;
-    return path.startsWith('http') ? path : `/storage/${path}`;
-};
+const photoSrc = (v) => mediaUrl(v.photos?.[0]?.path);
 </script>
 
 <template>

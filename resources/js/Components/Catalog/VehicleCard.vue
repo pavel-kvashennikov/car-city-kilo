@@ -3,13 +3,14 @@ import { Link } from '@inertiajs/vue3';
 import { Car, Star, Heart } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { useFavorites } from '@/composables/useFavorites';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 const props = defineProps({ vehicle: { type: Object, required: true } });
 
 const fmt = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
 const km = (n) => n > 0 ? new Intl.NumberFormat('ru-RU').format(n) + ' км' : 'Новый';
 const txLabel = { automatic: 'Автомат', manual: 'Механика', robot: 'Робот', cvt: 'Вариатор' };
-const photoSrc = (p) => p?.path?.startsWith('http') ? p.path : p?.path ? `/storage/${p.path}` : null;
+const photoSrc = (p) => mediaUrl(p?.path);
 
 const { isVehicleFavorited, toggle } = useFavorites();
 const isFav = computed(() => isVehicleFavorited(props.vehicle.id));

@@ -7,6 +7,7 @@ import {
     ChevronLeft, Phone, CalendarCheck, CreditCard, ArrowLeftRight,
     Gauge, Fuel, Settings, Car, Palette, ShieldCheck, Star, MapPin
 } from 'lucide-vue-next';
+import { mediaUrl } from '@/lib/mediaUrl';
 
 const props = defineProps({
     vehicle: Object,
@@ -18,12 +19,7 @@ const activePhoto = ref(0);
 const fmt = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
 const km = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' км';
 
-const photoSrc = (photo) => {
-    if (!photo?.path) return null;
-    // Full URL (from Unsplash seeder) or storage path
-    if (photo.path.startsWith('http')) return photo.path;
-    return `/storage/${photo.path}`;
-};
+const photoSrc = (photo) => mediaUrl(photo?.path);
 
 const transmissionLabel = {
     automatic: 'Автомат', manual: 'Механика', robot: 'Робот', cvt: 'Вариатор',
