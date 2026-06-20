@@ -17,7 +17,7 @@ class LeadController extends Controller
 
         $leads = $dealerProfile
             ? $dealerProfile->leads()
-                ->with('vehicle')
+                ->with(['vehicle.brand', 'vehicle.carModel', 'vehicle.photos' => fn ($q) => $q->where('is_main', true)])
                 ->when($request->status, fn ($q, $s) => $q->where('status', $s))
                 ->latest()
                 ->paginate(20)

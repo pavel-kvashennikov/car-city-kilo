@@ -159,6 +159,10 @@ Route::middleware('auth')->group(function () {
         // Dealer Profile
         Route::prefix('dealer')->name('dealer.')->group(function () {
             Route::resource('vehicles', VehicleController::class);
+            // Vehicle photos
+            Route::post('/vehicles/{vehicle}/photos', [Src\Dealer\Infrastructure\Http\Controllers\Cabinet\VehiclePhotoController::class, 'store'])->name('vehicles.photos.store');
+            Route::put('/vehicles/{vehicle}/photos/{photo}/main', [Src\Dealer\Infrastructure\Http\Controllers\Cabinet\VehiclePhotoController::class, 'setMain'])->name('vehicles.photos.main');
+            Route::delete('/vehicles/{vehicle}/photos/{photo}', [Src\Dealer\Infrastructure\Http\Controllers\Cabinet\VehiclePhotoController::class, 'destroy'])->name('vehicles.photos.destroy');
             Route::get('/leads', [Src\Dealer\Infrastructure\Http\Controllers\Cabinet\LeadController::class, 'index'])->name('leads.index');
             Route::put('/leads/{lead}', [Src\Dealer\Infrastructure\Http\Controllers\Cabinet\LeadController::class, 'update'])->name('leads.update');
         });
