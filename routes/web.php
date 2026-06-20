@@ -119,8 +119,11 @@ Route::middleware('auth')->group(function () {
     Route::prefix('buyer')->name('buyer.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
         Route::get('/appointments', [BuyerAppointmentController::class, 'index'])->name('appointments.index');
         Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites');
+        Route::post('/favorites/toggle', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+        Route::delete('/favorites/{favorite}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
     });
 
     // Cart
@@ -140,7 +143,7 @@ Route::middleware('auth')->group(function () {
     | Tenant Cabinet
     |--------------------------------------------------------------------------
     */
-    Route::prefix('cabinet')->name('cabinet.')->middleware(['auth'])->group(function () {
+    Route::prefix('cabinet')->name('cabinet.')->middleware(['auth', 'tenant'])->group(function () {
         Route::get('/', [App\Http\Controllers\Cabinet\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/billing', [CabinetBillingController::class, 'index'])->name('billing');
         Route::post('/billing/subscribe', [CabinetBillingController::class, 'subscribe'])->name('billing.subscribe');
@@ -185,7 +188,7 @@ Route::middleware('auth')->group(function () {
     | Admin Panel
     |--------------------------------------------------------------------------
     */
-    Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/companies', [CompanyManageController::class, 'index'])->name('companies.index');
         Route::put('/companies/{company}/approve', [CompanyManageController::class, 'approve'])->name('companies.approve');

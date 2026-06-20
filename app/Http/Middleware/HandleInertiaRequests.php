@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Src\Dealer\Domain\Models\Vehicle;
+use Src\Parts\Domain\Models\Product;
 use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
@@ -21,6 +23,16 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
+                'favoritedVehicleIds' => fn () => $request->user()
+                    ?->favorites()
+                    ->where('favoriteable_type', Vehicle::class)
+                    ->pluck('favoriteable_id')
+                    ->toArray() ?? [],
+                'favoritedProductIds' => fn () => $request->user()
+                    ?->favorites()
+                    ->where('favoriteable_type', Product::class)
+                    ->pluck('favoriteable_id')
+                    ->toArray() ?? [],
             ],
             'company' => function () use ($request) {
                 $company = $request->user()

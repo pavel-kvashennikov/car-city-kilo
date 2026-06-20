@@ -1,25 +1,49 @@
 <script setup>
 import AppLayout from '@/Components/Layout/AppLayout.vue';
 import { Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { ChevronLeft, Clock, Wrench, Users, CalendarCheck } from 'lucide-vue-next';
+import { ref, computed } from 'vue';
+import { ChevronLeft, Clock, Wrench, Users, CalendarCheck, Calendar } from 'lucide-vue-next';
 
-const props = defineProps({ service: Object });
+const props = defineProps({
+    service: Object,
+    availableSlots: { type: Object, default: () => ({}) },
+});
 
 const fmt = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
 
-// Simple appointment form
+// Даты из ключей availableSlots
+const availableDates = computed(() => Object.keys(props.availableSlots).sort());
+const selectedDate = ref(availableDates.value[0] ?? null);
+const slotsForDate = computed(() =>
+    selectedDate.value ? (props.availableSlots[selectedDate.value] ?? []) : [],
+);
+
+const fmtDate = (d) => {
+    if (!d) return '';
+    const date = new Date(d + 'T00:00:00');
+    return date.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric', month: 'short' });
+};
+const fmtTime = (t) => t ? t.slice(0, 5) : '';
+
+// Форма
 const apptForm = useForm({
     service_profile_id: props.service?.id,
     service_item_id: null,
+    time_slot_id: null,
+    master_id: null,
     client_name: '',
     client_phone: '',
     vehicle_brand: '',
     vehicle_model: '',
     vehicle_year: '',
     comment: '',
-    status: 'pending',
 });
+
+function selectSlot(slot) {
+    apptForm.time_slot_id = slot.id;
+    apptForm.master_id = slot.master_id ?? null;
+}
+
 const apptSent = ref(false);
 function bookAppointment() {
     apptForm.post('/appointments', {
@@ -120,22 +144,30 @@ function bookAppointment() {
                             <CalendarCheck class="w-5 h-5 text-primary" /> Онлайн-запись
                         </h2>
 
-                        <div v-if="apptSent" class="p-4 rounded-xl bg-success-bg text-center text-sm text-success font-semibold">
-                            ✓ Заявка отправлена! Сервис свяжется с вами для подтверждения.
+                        <!-- Success -->
+                        <div v-if="apptSent" class="p-4 rounded-xl bg-success-bg text-center space-y-1">
+                            <p class="text-success font-bold text-sm">✓ Заявка принята!</p>
+                            <p class="text-xs text-success/80">Сервис свяжется с вами для подтверждения.</p>
                         </div>
 
-                        <form v-else @submit.prevent="bookAppointment" class="space-y-3">
+                        <form v-else @submit.prevent="bookAppointment" class="space-y-3.5">
+
+                            <!-- Контактные данные -->
                             <div>
                                 <label class="block text-xs font-semibold text-on-surface-muted mb-1 uppercase tracking-wide">Ваше имя *</label>
                                 <input v-model="apptForm.client_name" required class="input-field text-sm" placeholder="Иван Иванов" />
+                                <p v-if="apptForm.errors.client_name" class="mt-1 text-xs text-danger">{{ apptForm.errors.client_name }}</p>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-on-surface-muted mb-1 uppercase tracking-wide">Телефон *</label>
                                 <input v-model="apptForm.client_phone" required class="input-field text-sm" placeholder="+7 (999) 123-45-67" />
+                                <p v-if="apptForm.errors.client_phone" class="mt-1 text-xs text-danger">{{ apptForm.errors.client_phone }}</p>
                             </div>
+
+                            <!-- Автомобиль -->
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label class="block text-xs font-semibold text-on-surface-muted mb-1 uppercase tracking-wide">Марка авто</label>
+                                    <label class="block text-xs font-semibold text-on-surface-muted mb-1 uppercase tracking-wide">Марка</label>
                                     <input v-model="apptForm.vehicle_brand" class="input-field text-sm" placeholder="Toyota" />
                                 </div>
                                 <div>
@@ -144,19 +176,75 @@ function bookAppointment() {
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-on-surface-muted mb-1 uppercase tracking-wide">Год</label>
-                                <input v-model="apptForm.vehicle_year" type="number" class="input-field text-sm" placeholder="2020" />
+                                <label class="block text-xs font-semibold text-on-surface-muted mb-1 uppercase tracking-wide">Год выпуска</label>
+                                <input v-model="apptForm.vehicle_year" type="number" min="1990" max="2030" class="input-field text-sm" placeholder="2020" />
                             </div>
+
+                            <!-- Выбор даты (если есть слоты) -->
+                            <template v-if="availableDates.length > 0">
+                                <div>
+                                    <label class="block text-xs font-semibold text-on-surface-muted mb-2 uppercase tracking-wide flex items-center gap-1">
+                                        <Calendar class="w-3.5 h-3.5" /> Дата записи
+                                    </label>
+                                    <div class="flex gap-1.5 flex-wrap">
+                                        <button
+                                            v-for="date in availableDates"
+                                            :key="date"
+                                            type="button"
+                                            @click="selectedDate = date; apptForm.time_slot_id = null"
+                                            class="px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors"
+                                            :class="selectedDate === date
+                                                ? 'bg-primary text-white border-primary'
+                                                : 'bg-surface border-outline text-on-surface hover:border-primary hover:text-primary'"
+                                        >
+                                            {{ fmtDate(date) }}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Выбор времени -->
+                                <div v-if="selectedDate && slotsForDate.length">
+                                    <label class="block text-xs font-semibold text-on-surface-muted mb-2 uppercase tracking-wide flex items-center gap-1">
+                                        <Clock class="w-3.5 h-3.5" /> Время
+                                    </label>
+                                    <div class="flex gap-1.5 flex-wrap">
+                                        <button
+                                            v-for="slot in slotsForDate"
+                                            :key="slot.id"
+                                            type="button"
+                                            @click="selectSlot(slot)"
+                                            class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors"
+                                            :class="apptForm.time_slot_id === slot.id
+                                                ? 'bg-primary text-white border-primary'
+                                                : 'bg-surface border-outline text-on-surface hover:border-primary hover:text-primary'"
+                                        >
+                                            {{ fmtTime(slot.start_time) }}
+                                        </button>
+                                    </div>
+                                    <p v-if="apptForm.errors.time_slot_id" class="mt-1 text-xs text-danger">{{ apptForm.errors.time_slot_id }}</p>
+                                </div>
+
+                                <!-- Выбранный слот -->
+                                <div v-if="apptForm.time_slot_id" class="p-2.5 rounded-lg bg-primary-light text-xs text-primary font-semibold">
+                                    ✓ Выбрано: {{ fmtDate(selectedDate) }}, {{ fmtTime(slotsForDate.find(s => s.id === apptForm.time_slot_id)?.start_time) }}
+                                </div>
+                            </template>
+
+                            <!-- Комментарий -->
                             <div>
                                 <label class="block text-xs font-semibold text-on-surface-muted mb-1 uppercase tracking-wide">Комментарий</label>
                                 <textarea v-model="apptForm.comment" class="input-field text-sm resize-none" rows="2" placeholder="Опишите проблему..."></textarea>
                             </div>
 
                             <div v-if="apptForm.service_item_id" class="text-xs text-primary font-medium">
-                                ✓ Услуга выбрана — нажмите «Записаться»
+                                ✓ Услуга выбрана
                             </div>
 
-                            <button type="submit" class="w-full btn-primary !justify-center !text-sm !py-2.5" :disabled="apptForm.processing">
+                            <button
+                                type="submit"
+                                class="w-full btn-primary !justify-center !text-sm !py-2.5"
+                                :disabled="apptForm.processing"
+                            >
                                 <CalendarCheck class="w-4 h-4" />
                                 {{ apptForm.processing ? 'Отправка...' : 'Записаться' }}
                             </button>

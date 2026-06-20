@@ -17,11 +17,12 @@ const profiles = computed(() => {
     return (page.props.company?.active_profiles ?? []).map(p => (typeof p === 'object' ? p.type : p));
 });
 
-const hasProfile = (type) => profiles.value.length === 0 || profiles.value.includes(type);
+// Показывает пункт только если профиль активирован (не fallback на "показать всё")
+const hasProfile = (type) => profiles.value.includes(type);
 
 const navigation = computed(() => [
-    { name: 'Дашборд', href: '/cabinet', icon: LayoutDashboard, always: true },
-    { name: 'Профиль компании', href: '/cabinet/company', icon: Building2, always: true },
+    { name: 'Дашборд', href: '/cabinet', icon: LayoutDashboard, show: true },
+    { name: 'Профиль компании', href: '/cabinet/company', icon: Building2, show: !!company.value },
     { name: 'Автомобили', href: '/cabinet/dealer/vehicles', icon: Car, show: hasProfile('dealer') },
     { name: 'Лиды', href: '/cabinet/dealer/leads', icon: ClipboardList, show: hasProfile('dealer') },
     { name: 'Запчасти', href: '/cabinet/parts/products', icon: Package, show: hasProfile('parts') },
@@ -30,10 +31,10 @@ const navigation = computed(() => [
     { name: 'Мастера', href: '/cabinet/service/masters', icon: Users, show: hasProfile('service') },
     { name: 'Расписание', href: '/cabinet/service/schedule', icon: Calendar, show: hasProfile('service') },
     { name: 'Записи', href: '/cabinet/service/appointments', icon: CalendarCheck, show: hasProfile('service') },
-    { name: 'Сотрудники', href: '/cabinet/staff', icon: UserCog, always: true },
-    { name: 'Биллинг', href: '/cabinet/billing', icon: CreditCard, always: true },
-    { name: 'Аналитика', href: '/cabinet/analytics', icon: BarChart2, always: true },
-].filter(item => item.always || item.show));
+    { name: 'Сотрудники', href: '/cabinet/staff', icon: UserCog, show: !!company.value },
+    { name: 'Биллинг', href: '/cabinet/billing', icon: CreditCard, show: !!company.value },
+    { name: 'Аналитика', href: '/cabinet/analytics', icon: BarChart2, show: !!company.value },
+].filter(item => item.show));
 
 const isActive = (href) => currentUrl.value === href || (href !== '/cabinet' && currentUrl.value.startsWith(href));
 </script>

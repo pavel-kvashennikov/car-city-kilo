@@ -15,38 +15,41 @@ class AppointmentController extends Controller
     {
         $validated = $request->validate([
             'service_profile_id' => ['required', 'exists:service_profiles,id'],
-            'service_item_id' => ['nullable', 'exists:service_items,id'],
-            'time_slot_id' => ['required', 'exists:time_slots,id'],
-            'master_id' => ['nullable', 'exists:service_masters,id'],
-            'client_name' => ['required', 'string', 'max:255'],
-            'client_phone' => ['required', 'string', 'max:20'],
-            'client_email' => ['nullable', 'email'],
-            'vehicle_brand' => ['nullable', 'string'],
-            'vehicle_model' => ['nullable', 'string'],
-            'vehicle_year' => ['nullable', 'integer'],
-            'vehicle_vin' => ['nullable', 'string', 'max:17'],
-            'comment' => ['nullable', 'string', 'max:1000'],
+            'service_item_id'    => ['nullable', 'exists:service_items,id'],
+            'time_slot_id'       => ['nullable', 'exists:time_slots,id'],
+            'master_id'          => ['nullable', 'exists:service_masters,id'],
+            'client_name'        => ['required', 'string', 'max:255'],
+            'client_phone'       => ['required', 'string', 'max:20'],
+            'client_email'       => ['nullable', 'email'],
+            'vehicle_brand'      => ['nullable', 'string'],
+            'vehicle_model'      => ['nullable', 'string'],
+            'vehicle_year'       => ['nullable', 'integer'],
+            'vehicle_vin'        => ['nullable', 'string', 'max:17'],
+            'comment'            => ['nullable', 'string', 'max:1000'],
         ]);
 
         $appointment = DB::transaction(function () use ($validated, $request) {
-            $slot = TimeSlot::where('id', $validated['time_slot_id'])
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            if ($slot->status !== SlotStatus::AVAILABLE) {
-                abort(422, 'Слот уже занят. Пожалуйста, выберите другое время.');
-            }
-
             $appointment = Appointment::create([
                 ...$validated,
                 'user_id' => $request->user()?->id,
-                'status' => 'pending',
+                'status'  => 'pending',
             ]);
 
-            $slot->update([
-                'status' => SlotStatus::BOOKED,
-                'appointment_id' => $appointment->id,
-            ]);
+            // Бронируем слот только если выбран конкретный
+            if (! empty($validated['time_slot_id'])) {
+                $slot = TimeSlot::where('id', $validated['time_slot_id'])
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                if ($slot->status !== SlotStatus::AVAILABLE) {
+                    abort(422, 'Слот уже занят. Пожалуйста, выберите другое время.');
+                }
+
+                $slot->update([
+                    'status'         => SlotStatus::BOOKED,
+                    'appointment_id' => $appointment->id,
+                ]);
+            }
 
             return $appointment;
         });

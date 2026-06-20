@@ -1,13 +1,24 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { Car, Star } from 'lucide-vue-next';
+import { Car, Star, Heart } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { useFavorites } from '@/composables/useFavorites';
 
-defineProps({ vehicle: { type: Object, required: true } });
+const props = defineProps({ vehicle: { type: Object, required: true } });
 
 const fmt = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
 const km = (n) => n > 0 ? new Intl.NumberFormat('ru-RU').format(n) + ' км' : 'Новый';
 const txLabel = { automatic: 'Автомат', manual: 'Механика', robot: 'Робот', cvt: 'Вариатор' };
 const photoSrc = (p) => p?.path?.startsWith('http') ? p.path : p?.path ? `/storage/${p.path}` : null;
+
+const { isVehicleFavorited, toggle } = useFavorites();
+const isFav = computed(() => isVehicleFavorited(props.vehicle.id));
+
+function handleFav(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    toggle('vehicle', props.vehicle.id);
+}
 </script>
 
 <template>
@@ -28,7 +39,17 @@ const photoSrc = (p) => p?.path?.startsWith('http') ? p.path : p?.path ? `/stora
                     <Star class="w-2.5 h-2.5" />Топ
                 </span>
             </div>
-            <div class="absolute top-2.5 right-2.5">
+            <div class="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+                <button
+                    @click="handleFav"
+                    class="w-7 h-7 rounded-full flex items-center justify-center bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-colors"
+                    :title="isFav ? 'Убрать из избранного' : 'В избранное'"
+                >
+                    <Heart
+                        class="w-3.5 h-3.5 transition-colors"
+                        :class="isFav ? 'fill-red-500 text-red-500' : 'text-on-surface-muted'"
+                    />
+                </button>
                 <span class="badge badge-neutral">{{ vehicle.year }}</span>
             </div>
         </div>
