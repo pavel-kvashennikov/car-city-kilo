@@ -13,17 +13,27 @@ createServer((page) =>
         title: (title) => title,
         resolve: (name) => {
             const pages = import.meta.glob('./Pages/**/*.vue', { eager: true });
-            return pages[`./Pages/${name}.vue`];
+            const pageModule = pages[`./Pages/${name}.vue`];
+            const component = pageModule.default;
+
+            if (!component.__seoLayoutApplied) {
+                const existingLayout = component.layout;
+
+                component.layout = (layoutH, child) => {
+                    const content = existingLayout ? existingLayout(layoutH, child) : child;
+
+                    return [layoutH(SeoHead), content];
+                };
+
+                component.__seoLayoutApplied = true;
+            }
+
+            return pageModule;
         },
         setup({ App, props, plugin }) {
             const pinia = createPinia();
 
-            return createSSRApp({
-                render: () => h('div', { id: 'app-root' }, [
-                    h(SeoHead),
-                    h(App, props),
-                ]),
-            })
+            return createSSRApp({ render: () => h(App, props) })
                 .use(plugin)
                 .use(pinia)
                 .use(ZiggyVue, {
