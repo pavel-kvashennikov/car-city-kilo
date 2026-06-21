@@ -8,8 +8,6 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\PermissionRegistrar;
-use Src\Billing\Domain\Models\Plan;
-use Src\Billing\Domain\Models\Subscription;
 use Src\Catalog\Domain\Models\CarBrand;
 use Src\Catalog\Domain\Models\PartCategory;
 use Src\Company\Domain\Models\BusinessProfile;
@@ -75,7 +73,6 @@ class DemoSeeder extends Seeder
     {
         $this->bootCatalogCache();
 
-        $plans = Plan::orderBy('sort_order')->get();
         $zones = $this->seedZones();
 
         setPermissionsTeamId(0);
@@ -183,20 +180,6 @@ class DemoSeeder extends Seeder
             }
             if (in_array('service', $data['profiles'], true)) {
                 $this->seedService($company, $data['specials']);
-            }
-
-            // Subscription
-            if ($plans->isNotEmpty()) {
-                $plan = $plans[$index % $plans->count()];
-                Subscription::firstOrCreate(
-                    ['company_id' => $company->id],
-                    [
-                        'plan_id' => $plan->id,
-                        'status' => 'active',
-                        'current_period_start' => now()->subDays(rand(1, 25)),
-                        'current_period_end' => now()->addDays(rand(5, 30)),
-                    ]
-                );
             }
 
             // Market location (occupied)

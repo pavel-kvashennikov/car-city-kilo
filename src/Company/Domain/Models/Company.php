@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
-use Src\Billing\Domain\Models\Subscription;
 use Src\Dealer\Domain\Models\DealerProfile;
 use Src\MarketMap\Domain\Models\MarketLocation;
 use Src\Parts\Domain\Models\PartsProfile;
@@ -91,11 +90,6 @@ class Company extends Model
     public function locations(): HasMany
     {
         return $this->hasMany(MarketLocation::class);
-    }
-
-    public function subscription(): HasOne
-    {
-        return $this->hasOne(Subscription::class)->latest();
     }
 
     public function isActive(): bool

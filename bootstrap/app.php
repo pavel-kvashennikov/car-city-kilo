@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckProfileAccess;
-use App\Http\Middleware\CheckTenantSubscription;
+use App\Http\Middleware\EnsureActiveTenant;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureTenant;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -27,7 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'tenant.active' => CheckTenantSubscription::class,
+            'tenant.active' => EnsureActiveTenant::class,
             'set.tenant.context' => SetTenantContext::class,
             'profile' => CheckProfileAccess::class,
             'role' => RoleMiddleware::class,

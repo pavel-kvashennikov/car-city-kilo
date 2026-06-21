@@ -1,7 +1,6 @@
 <?php
 
 use App\Providers\AppServiceProvider;
-use Src\Billing\Providers\BillingServiceProvider;
 use Src\Catalog\Providers\CatalogServiceProvider;
 use Src\Company\Providers\CompanyServiceProvider;
 use Src\Dealer\Providers\DealerServiceProvider;
@@ -18,6 +17,5 @@ return [
     ServiceServiceProvider::class,
     OrderServiceProvider::class,
     CatalogServiceProvider::class,
-    BillingServiceProvider::class,
     MarketMapServiceProvider::class,
 ];

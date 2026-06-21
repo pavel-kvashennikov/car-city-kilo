@@ -207,10 +207,9 @@ dc-prod down -v
 
 1. `RolePermissionSeeder` — роли и права
 2. `CatalogSeeder` — каталог
-3. `PlanSeeder` — тарифы
-4. `ServiceCategorySeeder` — категории услуг
-5. Пользователей `admin@automarket.ru` / `buyer@automarket.ru`
-6. `DemoSeeder` — демо-данные
+3. `ServiceCategorySeeder` — категории услуг
+4. Пользователей `admin@automarket.ru` / `buyer@automarket.ru`
+5. `DemoSeeder` — демо-данные
 
 Автоматически при первом деплое (если `RUN_DB_SEED=true`):
 

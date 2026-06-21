@@ -3,7 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import {
     Car, Shield, LayoutDashboard, Building2, AlertCircle, MapPin,
-    BookOpen, CreditCard, BarChart2, LogOut, Newspaper
+    BookOpen, BarChart2, LogOut, Newspaper
 } from 'lucide-vue-next';
 
 const page = usePage();
@@ -16,7 +16,6 @@ const navigation = [
     { name: 'Модерация', href: '/admin/moderation', icon: AlertCircle },
     { name: 'Карта рынка', href: '/admin/market-map', icon: MapPin },
     { name: 'Каталог', href: '/admin/catalog', icon: BookOpen },
-    { name: 'Биллинг', href: '/admin/billing', icon: CreditCard },
     { name: 'Аналитика', href: '/admin/analytics', icon: BarChart2 },
     { name: 'Блог', href: '/admin/blog/posts', icon: Newspaper },
 ];

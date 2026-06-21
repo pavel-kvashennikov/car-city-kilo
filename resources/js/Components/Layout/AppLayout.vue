@@ -288,7 +288,6 @@ function logout() {
                         <h4 class="font-semibold text-xs uppercase tracking-wider text-gray-400 mb-3">Бизнес</h4>
                         <ul class="space-y-2 text-sm text-gray-500">
                             <li><Link href="/register/company" class="hover:text-white transition-colors">Стать резидентом</Link></li>
-                            <li><Link href="/cabinet/billing" class="hover:text-white transition-colors">Тарифы</Link></li>
                             <li><Link href="/cabinet" class="hover:text-white transition-colors">Личный кабинет</Link></li>
                         </ul>
                     </div>

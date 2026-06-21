@@ -360,9 +360,6 @@ const highlights = [
                                 <Link href="/register/company" class="btn-primary !text-sm">
                                     <Users class="w-4 h-4" /> Зарегистрироваться
                                 </Link>
-                                <Link href="/cabinet/billing" class="btn-secondary !text-sm border-white/20 !text-gray-300 hover:!text-white hover:!bg-white/10">
-                                    Тарифы
-                                </Link>
                             </div>
                         </div>
                         <!-- Benefits right -->

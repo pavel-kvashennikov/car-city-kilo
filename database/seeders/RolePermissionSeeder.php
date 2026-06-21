@@ -36,7 +36,7 @@ class RolePermissionSeeder extends Seeder
             // Orders
             'order.view', 'order.manage',
             // Admin
-            'admin.panel', 'billing.manage', 'market-map.manage',
+            'admin.panel', 'market-map.manage',
             // Staff
             'staff.manage',
         ];

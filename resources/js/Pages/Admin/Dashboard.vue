@@ -139,7 +139,7 @@ const fmtDate = (d) => d ? new Date(d).toLocaleDateString('ru-RU', { day: '2-dig
                         { label: 'Компании',       href: '/admin/companies',    icon: Building2 },
                         { label: 'Модерация',      href: '/admin/moderation',   icon: AlertCircle },
                         { label: 'Блог',           href: '/admin/blog/posts',   icon: Newspaper },
-                        { label: 'Биллинг',        href: '/admin/billing',      icon: TrendingUp },
+                        { label: 'Аналитика',      href: '/admin/analytics',    icon: TrendingUp },
                     ]" :key="link.href" :href="link.href"
                         class="flex flex-col items-center gap-2 p-4 rounded-xl border border-outline hover:border-primary/40 hover:bg-primary/5 transition-colors text-center">
                         <component :is="link.icon" class="w-6 h-6 text-primary" />

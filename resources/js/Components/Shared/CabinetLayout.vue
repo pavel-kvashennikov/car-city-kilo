@@ -3,7 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import {
     Car, LayoutDashboard, Building2, Package, ClipboardList, Wrench,
-    Users, Calendar, CalendarCheck, UserCog, CreditCard, BarChart2,
+    Users, Calendar, CalendarCheck, UserCog, BarChart2,
     Menu, LogOut, ChevronRight
 } from 'lucide-vue-next';
 
@@ -32,7 +32,6 @@ const navigation = computed(() => [
     { name: 'Расписание', href: '/cabinet/service/schedule', icon: Calendar, show: hasProfile('service') },
     { name: 'Записи', href: '/cabinet/service/appointments', icon: CalendarCheck, show: hasProfile('service') },
     { name: 'Сотрудники', href: '/cabinet/staff', icon: UserCog, show: !!company.value },
-    { name: 'Биллинг', href: '/cabinet/billing', icon: CreditCard, show: !!company.value },
     { name: 'Аналитика', href: '/cabinet/analytics', icon: BarChart2, show: !!company.value },
 ].filter(item => item.show));
 
