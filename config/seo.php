@@ -19,7 +19,7 @@ return [
 
     'yandex_verification' => env('SEO_YANDEX_VERIFICATION'),
 
-    'yandex_metrika_id' => env('YANDEX_METRIKA_ID'),
+    'yandex_metrika_id' => env('YANDEX_METRIKA_ID', '110040035'),
 
     'title_separator' => ' — ',
 

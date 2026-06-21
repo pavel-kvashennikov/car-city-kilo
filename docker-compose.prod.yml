@@ -17,6 +17,7 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       MEILISEARCH_HOST: http://meilisearch:7700
+      YANDEX_METRIKA_ID: ${YANDEX_METRIKA_ID:-110040035}
     volumes:
       - .:/var/www/html
       - ./docker/php/production.ini:/usr/local/etc/php/conf.d/production.ini:ro
