@@ -1,5 +1,6 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3'
+import { useForm } from '@inertiajs/vue3';
+import PhoneInput from '@/Components/UI/PhoneInput.vue';
 
 const props = defineProps({
     vehicleId: { type: Number, required: true },
@@ -50,7 +51,7 @@ const submit = () => {
             <input v-model="form.name" type="text" placeholder="Ваше имя *" required class="w-full rounded-lg border-gray-300" />
         </div>
         <div>
-            <input v-model="form.phone" type="tel" placeholder="Телефон *" required class="w-full rounded-lg border-gray-300" />
+            <PhoneInput v-model="form.phone" required input-class="w-full rounded-lg border-gray-300" />
         </div>
         <button
             type="submit"

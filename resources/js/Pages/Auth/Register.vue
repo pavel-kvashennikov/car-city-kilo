@@ -1,6 +1,7 @@
 <script setup>
 import { useForm, Link } from '@inertiajs/vue3';
 import { Car } from 'lucide-vue-next';
+import PhoneInput from '@/Components/UI/PhoneInput.vue';
 
 const form = useForm({
     name: '',
@@ -46,7 +47,7 @@ function submit() {
 
                     <div>
                         <label class="block text-xs font-semibold text-on-surface-muted mb-1.5 uppercase tracking-wide">Телефон</label>
-                        <input v-model="form.phone" type="tel" class="input-field" placeholder="+7 (999) 123-45-67" />
+                        <PhoneInput v-model="form.phone" input-class="input-field w-full" />
                     </div>
 
                     <div>

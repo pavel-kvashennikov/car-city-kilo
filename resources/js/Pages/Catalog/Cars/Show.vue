@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Components/Layout/AppLayout.vue';
 import VehicleCard from '@/Components/Catalog/VehicleCard.vue';
+import PhoneInput from '@/Components/UI/PhoneInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import {
@@ -250,8 +251,8 @@ function submitLead() {
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-on-surface-muted mb-1.5">Телефон *</label>
-                                <input v-model="leadForm.client_phone" required type="tel" placeholder="+7 (999) 000-00-00"
-                                    class="input-field w-full" :class="{ 'border-danger': leadForm.errors.client_phone }" />
+                                <PhoneInput v-model="leadForm.client_phone" required
+                                    :input-class="'input-field w-full' + (leadForm.errors.client_phone ? ' border-danger' : '')" />
                                 <p v-if="leadForm.errors.client_phone" class="text-xs text-danger mt-1">{{ leadForm.errors.client_phone }}</p>
                             </div>
                             <div>

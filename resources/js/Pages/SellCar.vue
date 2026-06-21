@@ -1,11 +1,35 @@
 <script setup>
 import AppLayout from '@/Components/Layout/AppLayout.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import PhoneInput from '@/Components/UI/PhoneInput.vue';
 import {
     Car, ArrowRight, CheckCircle2, Shield, Zap, Clock, DollarSign,
     FileText, Users, ChevronRight, Star, Phone, TrendingUp,
-    Banknote, RefreshCw, Tag, ClipboardList, Camera, BadgeCheck,
+    Banknote, RefreshCw, Tag, ClipboardList, BadgeCheck, CheckCheck,
 } from 'lucide-vue-next';
+
+const page = usePage();
+const successMessage = ref('');
+const submitted = ref(false);
+
+const form = useForm({
+    car_info:     '',
+    mileage:      '',
+    year:         '',
+    client_phone: '',
+});
+
+function submit() {
+    form.post('/sell-car/inquiry', {
+        preserveScroll: true,
+        onSuccess: () => {
+            successMessage.value = page.props.flash?.success ?? 'Заявка принята! Мы перезвоним вам в течение 15 минут.';
+            submitted.value = true;
+            form.reset();
+        },
+    });
+}
 
 const steps = [
     { num: '01', title: 'Оставьте заявку', desc: 'Заполните короткую форму онлайн или позвоните нам — оценка занимает 5 минут.' },
@@ -165,50 +189,87 @@ const faqs = [
 
                     <!-- Quick eval card -->
                     <div id="sell-form" class="card !bg-white/5 !border-white/10 backdrop-blur-xl p-6 lg:p-8">
-                        <h2 class="text-lg font-bold text-white mb-1">Бесплатная оценка</h2>
-                        <p class="text-sm text-gray-400 mb-5">Оставьте контакты — перезвоним в течение 15 минут</p>
 
-                        <div class="space-y-3">
+                        <!-- Success state -->
+                        <div v-if="submitted" class="text-center py-6">
+                            <div class="w-16 h-16 rounded-full bg-teal-400/15 flex items-center justify-center mx-auto mb-4">
+                                <CheckCheck class="w-8 h-8 text-teal-300" />
+                            </div>
+                            <h3 class="text-white font-bold text-lg mb-2">Заявка принята!</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-4">{{ successMessage }}</p>
+                            <button
+                                @click="submitted = false"
+                                class="text-xs text-gray-500 hover:text-gray-300 transition-colors underline underline-offset-2"
+                            >
+                                Подать ещё одну заявку
+                            </button>
+                        </div>
+
+                        <!-- Form -->
+                        <form v-else @submit.prevent="submit" class="space-y-3">
+                            <div class="mb-4">
+                                <h2 class="text-lg font-bold text-white mb-1">Бесплатная оценка</h2>
+                                <p class="text-sm text-gray-400">Оставьте контакты — перезвоним в течение 15 минут</p>
+                            </div>
+
                             <div>
                                 <label class="block text-xs text-gray-400 mb-1.5 font-medium">Марка и модель</label>
                                 <input
+                                    v-model="form.car_info"
                                     type="text"
                                     placeholder="Например, Toyota Camry 2021"
-                                    class="w-full rounded-[var(--radius-button)] bg-white/10 border border-white/15 text-white placeholder:text-gray-500 px-4 py-2.5 text-sm outline-none focus:border-primary-bright focus:bg-white/15 transition-colors"
+                                    class="w-full rounded-[var(--radius-button)] bg-white/10 border text-white placeholder:text-gray-500 px-4 py-2.5 text-sm outline-none focus:bg-white/15 transition-colors"
+                                    :class="form.errors.car_info ? 'border-red-400' : 'border-white/15 focus:border-primary-bright'"
                                 />
+                                <p v-if="form.errors.car_info" class="text-red-400 text-xs mt-1">{{ form.errors.car_info }}</p>
                             </div>
+
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
                                     <label class="block text-xs text-gray-400 mb-1.5 font-medium">Пробег, км</label>
                                     <input
+                                        v-model="form.mileage"
                                         type="number"
                                         placeholder="65 000"
-                                        class="w-full rounded-[var(--radius-button)] bg-white/10 border border-white/15 text-white placeholder:text-gray-500 px-4 py-2.5 text-sm outline-none focus:border-primary-bright focus:bg-white/15 transition-colors"
+                                        min="0"
+                                        class="w-full rounded-[var(--radius-button)] bg-white/10 border border-white/15 text-white placeholder:text-gray-500 px-4 py-2.5 text-sm outline-none focus:border-primary-bright focus:bg-white/15 transition-colors [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                     />
                                 </div>
                                 <div>
                                     <label class="block text-xs text-gray-400 mb-1.5 font-medium">Год</label>
                                     <input
+                                        v-model="form.year"
                                         type="number"
                                         placeholder="2021"
-                                        class="w-full rounded-[var(--radius-button)] bg-white/10 border border-white/15 text-white placeholder:text-gray-500 px-4 py-2.5 text-sm outline-none focus:border-primary-bright focus:bg-white/15 transition-colors"
+                                        min="1900"
+                                        :max="new Date().getFullYear() + 1"
+                                        class="w-full rounded-[var(--radius-button)] bg-white/10 border border-white/15 text-white placeholder:text-gray-500 px-4 py-2.5 text-sm outline-none focus:border-primary-bright focus:bg-white/15 transition-colors [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                                     />
                                 </div>
                             </div>
+
                             <div>
                                 <label class="block text-xs text-gray-400 mb-1.5 font-medium">Ваш телефон</label>
-                                <input
-                                    type="tel"
-                                    placeholder="+7 (___) ___-__-__"
-                                    class="w-full rounded-[var(--radius-button)] bg-white/10 border border-white/15 text-white placeholder:text-gray-500 px-4 py-2.5 text-sm outline-none focus:border-primary-bright focus:bg-white/15 transition-colors"
+                                <PhoneInput
+                                    v-model="form.client_phone"
+                                    :input-class="'w-full rounded-[var(--radius-button)] bg-white/10 border text-white placeholder:text-gray-500 px-4 py-2.5 text-sm outline-none focus:bg-white/15 transition-colors ' + (form.errors.client_phone ? 'border-red-400' : 'border-white/15 focus:border-primary-bright')"
                                 />
+                                <p v-if="form.errors.client_phone" class="text-red-400 text-xs mt-1">{{ form.errors.client_phone }}</p>
                             </div>
-                            <button class="w-full btn-primary !py-3 !text-sm mt-1">
+
+                            <button
+                                type="submit"
+                                :disabled="form.processing"
+                                class="w-full btn-primary !py-3 !text-sm mt-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
                                 <Phone class="w-4 h-4" />
-                                Получить оценку бесплатно
+                                {{ form.processing ? 'Отправляем...' : 'Получить оценку бесплатно' }}
                             </button>
-                        </div>
-                        <p class="text-center text-xs text-gray-600 mt-3">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных</p>
+
+                            <p class="text-center text-xs text-gray-600 mt-1">
+                                Нажимая кнопку, вы соглашаетесь с обработкой персональных данных
+                            </p>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -224,18 +285,11 @@ const faqs = [
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                     <div
-                        v-for="(step, i) in steps"
+                        v-for="step in steps"
                         :key="step.num"
-                        class="card p-5 relative"
+                        class="card p-5"
                     >
-                        <!-- connector line -->
-                        <div v-if="i < steps.length - 1"
-                            class="hidden lg:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-outline to-transparent z-10 pointer-events-none"
-                            style="width: calc(100% - 2rem); left: calc(100% - 0.5rem)"
-                        />
-                        <div class="flex items-center gap-3 mb-3">
-                            <span class="text-3xl font-extrabold text-gradient opacity-40 leading-none">{{ step.num }}</span>
-                        </div>
+                        <span class="text-3xl font-extrabold text-gradient opacity-40 leading-none block mb-3">{{ step.num }}</span>
                         <h3 class="font-bold text-sm text-on-surface mb-1.5">{{ step.title }}</h3>
                         <p class="text-xs text-on-surface-muted leading-relaxed">{{ step.desc }}</p>
                     </div>

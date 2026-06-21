@@ -4,7 +4,7 @@ import { computed } from 'vue';
 import {
     Car, LayoutDashboard, Building2, Package, ClipboardList, Wrench,
     Users, Calendar, CalendarCheck, UserCog, BarChart2,
-    Menu, LogOut, ChevronRight
+    Menu, LogOut, ChevronRight, Banknote
 } from 'lucide-vue-next';
 
 const page = usePage();
@@ -25,6 +25,7 @@ const navigation = computed(() => [
     { name: 'Профиль компании', href: '/cabinet/company', icon: Building2, show: !!company.value },
     { name: 'Автомобили', href: '/cabinet/dealer/vehicles', icon: Car, show: hasProfile('dealer') },
     { name: 'Лиды', href: '/cabinet/dealer/leads', icon: ClipboardList, show: hasProfile('dealer') },
+    { name: 'Заявки на выкуп', href: '/cabinet/dealer/sell-car-inquiries', icon: Banknote, show: hasProfile('dealer') },
     { name: 'Запчасти', href: '/cabinet/parts/products', icon: Package, show: hasProfile('parts') },
     { name: 'Заказы', href: '/cabinet/parts/orders', icon: ClipboardList, show: hasProfile('parts') },
     { name: 'Услуги', href: '/cabinet/service/items', icon: Wrench, show: hasProfile('service') },

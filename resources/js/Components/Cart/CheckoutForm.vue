@@ -1,5 +1,6 @@
 <script setup>
-import { useForm } from '@inertiajs/vue3'
+import { useForm } from '@inertiajs/vue3';
+import PhoneInput from '@/Components/UI/PhoneInput.vue';
 
 const form = useForm({
     contact_name: '',
@@ -27,7 +28,7 @@ const submit = () => {
             </div>
             <div>
                 <label class="block text-sm text-gray-600 mb-1">Телефон *</label>
-                <input v-model="form.contact_phone" type="tel" required class="w-full rounded-lg border-gray-300" />
+                <PhoneInput v-model="form.contact_phone" required input-class="w-full rounded-lg border-gray-300" />
                 <p v-if="form.errors.contact_phone" class="text-sm text-red-600 mt-1">{{ form.errors.contact_phone }}</p>
             </div>
             <div>

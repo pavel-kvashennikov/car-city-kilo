@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
 use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
 use App\Http\Controllers\Admin\BlogPostController as AdminBlogPostController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\Cabinet\SellCarInquiryController as CabinetSellCarInquiryController;
+use App\Http\Controllers\SellCarInquiryController;
 use App\Http\Controllers\Admin\CatalogController;
 use App\Http\Controllers\Admin\CompanyManageController;
 use App\Http\Controllers\Admin\MarketMapController;
@@ -95,6 +97,7 @@ Route::get('/market-map', [Src\MarketMap\Infrastructure\Http\Controllers\MarketM
 Route::get('/sell-car', function () {
     return Inertia::render('SellCar');
 })->name('sell-car');
+Route::post('/sell-car/inquiry', [SellCarInquiryController::class, 'store'])->name('sell-car.inquiry');
 
 // Blog (public)
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
@@ -165,6 +168,8 @@ Route::middleware('auth')->group(function () {
 
         // Dealer Profile
         Route::prefix('dealer')->name('dealer.')->group(function () {
+            Route::get('/sell-car-inquiries', [CabinetSellCarInquiryController::class, 'index'])->name('sell_car_inquiries.index');
+            Route::put('/sell-car-inquiries/{inquiry}', [CabinetSellCarInquiryController::class, 'update'])->name('sell_car_inquiries.update');
             Route::resource('vehicles', VehicleController::class);
             // Vehicle photos
             Route::post('/vehicles/{vehicle}/photos', [Src\Dealer\Infrastructure\Http\Controllers\Cabinet\VehiclePhotoController::class, 'store'])->name('vehicles.photos.store');
