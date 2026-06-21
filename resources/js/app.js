@@ -6,6 +6,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from 'ziggy-js';
 import { createPinia } from 'pinia';
 import SeoHead from '@/Components/Seo/SeoHead.vue';
+import { setupYandexMetrika } from '@/lib/yandexMetrika';
 
 createInertiaApp({
     title: (title) => title,
@@ -33,6 +34,8 @@ createInertiaApp({
     },
     setup({ el, App, props, plugin }) {
         const pinia = createPinia();
+
+        setupYandexMetrika();
 
         return createApp({ render: () => h(App, props) })
             .use(plugin)

@@ -19,6 +19,8 @@ return [
 
     'yandex_verification' => env('SEO_YANDEX_VERIFICATION'),
 
+    'yandex_metrika_id' => env('YANDEX_METRIKA_ID'),
+
     'title_separator' => ' — ',
 
     'noindex_route_prefixes' => [

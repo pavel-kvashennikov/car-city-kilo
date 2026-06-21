@@ -14,6 +14,9 @@
     @if(config('seo.yandex_verification'))
         <meta name="yandex-verification" content="{{ config('seo.yandex_verification') }}">
     @endif
+    @if(config('seo.yandex_metrika_id'))
+        <meta name="yandex-metrika-id" content="{{ config('seo.yandex_metrika_id') }}">
+    @endif
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,5 +27,6 @@
 </head>
 <body class="font-sans antialiased">
     @inertia
+    @include('partials.yandex-metrika')
 </body>
 </html>
