@@ -4,14 +4,13 @@ import { renderToString } from '@vue/server-renderer';
 import { createSSRApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { createPinia } from 'pinia';
-
-const appName = import.meta.env.VITE_APP_NAME || 'Город машин';
+import SeoHead from '@/Components/Seo/SeoHead.vue';
 
 createServer((page) =>
     createInertiaApp({
         page,
         render: renderToString,
-        title: (title) => `${title} - ${appName}`,
+        title: (title) => title,
         resolve: (name) => {
             const pages = import.meta.glob('./Pages/**/*.vue', { eager: true });
             return pages[`./Pages/${name}.vue`];
@@ -19,7 +18,12 @@ createServer((page) =>
         setup({ App, props, plugin }) {
             const pinia = createPinia();
 
-            return createSSRApp({ render: () => h(App, props) })
+            return createSSRApp({
+                render: () => h('div', { id: 'app-root' }, [
+                    h(SeoHead),
+                    h(App, props),
+                ]),
+            })
                 .use(plugin)
                 .use(pinia)
                 .use(ZiggyVue, {

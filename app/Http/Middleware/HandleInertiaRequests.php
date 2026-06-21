@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Seo\SeoResolver;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Src\Dealer\Domain\Models\Vehicle;
@@ -70,6 +71,12 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
+            ],
+            'seo' => fn () => app(SeoResolver::class)->resolve($request),
+            'seoSite' => fn () => [
+                'name' => config('seo.site_name'),
+                'url' => config('app.url'),
+                'twitter' => config('seo.twitter_handle'),
             ],
         ];
     }

@@ -5,11 +5,10 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from 'ziggy-js';
 import { createPinia } from 'pinia';
-
-const appName = import.meta.env.VITE_APP_NAME || 'Город машин';
+import SeoHead from '@/Components/Seo/SeoHead.vue';
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    title: (title) => title,
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.vue`,
@@ -18,7 +17,12 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         const pinia = createPinia();
 
-        return createApp({ render: () => h(App, props) })
+        return createApp({
+            render: () => h('div', { id: 'app-root' }, [
+                h(SeoHead),
+                h(App, props),
+            ]),
+        })
             .use(plugin)
             .use(pinia)
             .use(ZiggyVue)

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SeoController;
 use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
 use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
 use App\Http\Controllers\Admin\BlogPostController as AdminBlogPostController;
@@ -41,6 +42,14 @@ use Src\Service\Infrastructure\Http\Controllers\Cabinet\MasterController;
 use Src\Service\Infrastructure\Http\Controllers\Cabinet\ScheduleController;
 use Src\Service\Infrastructure\Http\Controllers\Cabinet\ServiceItemController;
 use Src\Service\Infrastructure\Http\Controllers\ServiceCatalogController;
+
+/*
+|--------------------------------------------------------------------------
+| SEO Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
 
 /*
 |--------------------------------------------------------------------------
