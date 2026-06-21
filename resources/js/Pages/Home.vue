@@ -3,7 +3,7 @@ import AppLayout from '@/Components/Layout/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
 import {
     Car, Wrench, Settings, MapPin, ArrowRight, Shield, Zap, Users,
-    Star, ChevronRight, Package, CheckCircle2, TrendingUp
+    Star, ChevronRight, Package, CheckCircle2, TrendingUp, Banknote
 } from 'lucide-vue-next';
 
 import { mediaUrl } from '@/lib/mediaUrl';
@@ -337,6 +337,54 @@ const highlights = [
                             <ChevronRight class="w-3.5 h-3.5 text-primary group-hover:translate-x-0.5 transition-transform" />
                         </div>
                     </Link>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════ SELL CAR BANNER ══════════════ -->
+        <section class="section">
+            <div class="container-app">
+                <div class="card overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-5">
+                        <!-- Text area -->
+                        <div class="lg:col-span-3 p-7 lg:p-10">
+                            <p class="eyebrow mb-3">Хотите продать авто?</p>
+                            <h2 class="text-xl lg:text-2xl font-extrabold text-on-surface leading-tight mb-3">
+                                Выкупим ваш автомобиль<br class="hidden sm:block" />
+                                <span class="text-gradient">за 1 день по честной цене</span>
+                            </h2>
+                            <p class="text-sm text-on-surface-muted leading-relaxed mb-6 max-w-md">
+                                Trade-in, срочный выкуп или комиссия. Любые марки и модели,
+                                в том числе с залогом. Оформление без лишних поездок.
+                            </p>
+                            <div class="flex flex-wrap gap-3">
+                                <Link href="/sell-car" class="btn-primary !text-sm">
+                                    <Banknote class="w-4 h-4" />
+                                    Узнать стоимость
+                                    <ArrowRight class="w-4 h-4" />
+                                </Link>
+                                <Link href="/sell-car#programs" class="btn-secondary !text-sm">
+                                    Программы продажи
+                                </Link>
+                            </div>
+                        </div>
+                        <!-- Stats column -->
+                        <div class="lg:col-span-2 bg-surface-muted border-t lg:border-t-0 lg:border-l border-outline p-7 lg:p-10 flex flex-col justify-center gap-4">
+                            <div v-for="item in [
+                                { value: '1 день', label: 'Сделка и выплата' },
+                                { value: '14', label: 'Параметров оценки' },
+                                { value: '100%', label: 'Юридическая чистота' },
+                            ]" :key="item.label" class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-primary-light flex items-center justify-center shrink-0">
+                                    <Banknote class="w-5 h-5 text-primary" />
+                                </div>
+                                <div>
+                                    <div class="text-xl font-extrabold text-gradient">{{ item.value }}</div>
+                                    <div class="text-xs text-on-surface-muted">{{ item.label }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

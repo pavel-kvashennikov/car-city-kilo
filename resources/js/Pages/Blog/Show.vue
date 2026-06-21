@@ -69,15 +69,15 @@ const fmtDate = (d) => {
                 </div>
 
                 <!-- Content -->
-                <div class="card p-6 sm:p-8 prose prose-lg max-w-none
-                    prose-headings:text-on-surface prose-headings:font-bold
-                    prose-p:text-on-surface prose-p:leading-relaxed
+                <div class="card p-6 sm:p-10 prose prose-lg max-w-none
+                    prose-p:text-on-surface prose-p:leading-[1.85] prose-p:mb-4
                     prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                    prose-strong:text-on-surface
-                    prose-ul:text-on-surface prose-ol:text-on-surface
-                    prose-blockquote:border-primary prose-blockquote:text-on-surface-muted
-                    prose-code:text-primary prose-code:bg-surface-muted prose-code:px-1 prose-code:rounded
-                    prose-img:rounded-xl"
+                    prose-strong:text-on-surface prose-strong:font-semibold
+                    prose-blockquote:border-none prose-blockquote:bg-surface-muted
+                    prose-blockquote:rounded-xl prose-blockquote:px-6 prose-blockquote:py-4
+                    prose-blockquote:text-on-surface-muted prose-blockquote:not-italic
+                    prose-code:text-primary prose-code:bg-surface-muted prose-code:px-1.5 prose-code:rounded prose-code:font-normal
+                    prose-img:rounded-2xl prose-img:shadow-sm"
                     v-html="post.content" />
 
                 <!-- Tags -->

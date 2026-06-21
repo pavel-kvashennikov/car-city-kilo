@@ -282,6 +282,7 @@ function logout() {
                             <li><Link href="/catalog/services" class="hover:text-white transition-colors">Автосервисы</Link></li>
                             <li><Link href="/market-map" class="hover:text-white transition-colors">Карта рынка</Link></li>
                             <li><Link href="/blog" class="hover:text-white transition-colors">Блог</Link></li>
+                            <li><Link href="/sell-car" class="hover:text-white transition-colors">Продать авто</Link></li>
                         </ul>
                     </div>
                     <div>

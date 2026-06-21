@@ -91,6 +91,11 @@ Route::get('/companies/{company:slug}', [CompanyController::class, 'show'])->nam
 // Market Map
 Route::get('/market-map', [Src\MarketMap\Infrastructure\Http\Controllers\MarketMapController::class, 'index'])->name('market-map');
 
+// Sell Car
+Route::get('/sell-car', function () {
+    return Inertia::render('SellCar');
+})->name('sell-car');
+
 // Blog (public)
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');

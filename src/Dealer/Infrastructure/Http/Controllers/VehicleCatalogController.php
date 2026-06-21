@@ -27,7 +27,7 @@ class VehicleCatalogController extends Controller
             ->when($request->condition, fn ($q, $v) => $q->where('condition', $v))
             ->with(['brand', 'carModel', 'photos' => fn ($q) => $q->where('is_main', true)])
             ->orderBy($request->sort ?? 'created_at', $request->direction ?? 'desc')
-            ->paginate(20)
+            ->paginate(21)
             ->withQueryString();
 
         return Inertia::render('Catalog/Cars/Index', [
